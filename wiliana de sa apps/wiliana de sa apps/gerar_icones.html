@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head><title>Gerador de Ícones PWA</title></head>
+<body>
+<canvas id="c192" width="192" height="192" style="display:none"></canvas>
+<canvas id="c512" width="512" height="512" style="display:none"></canvas>
+<p>Gerando ícones... <span id="status"></span></p>
+<script>
+function gerarIcone(size) {
+  const canvas = document.getElementById('c' + size);
+  const ctx = canvas.getContext('2d');
+  
+  // Fundo navy
+  ctx.fillStyle = '#0b1929';
+  ctx.beginPath();
+  ctx.roundRect(0, 0, size, size, size * 0.18);
+  ctx.fill();
+  
+  // Círculo teal
+  ctx.fillStyle = '#1f6b63';
+  ctx.beginPath();
+  ctx.arc(size/2, size/2, size * 0.32, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Emoji de balança
+  ctx.font = `${size * 0.38}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('⚖️', size/2, size/2);
+  
+  // Linha dourada embaixo
+  ctx.fillStyle = '#c9a84c';
+  ctx.fillRect(size * 0.2, size * 0.82, size * 0.6, size * 0.04);
+  
+  return canvas.toDataURL('image/png');
+}
+
+// Gerar e fazer download dos ícones
+const status = document.getElementById('status');
+
+function download(dataUrl, filename) {
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = filename;
+  a.click();
+}
+
+setTimeout(() => {
+  download(gerarIcone(192), 'icon-192.png');
+  setTimeout(() => {
+    download(gerarIcone(512), 'icon-512.png');
+    status.textContent = '✅ Ícones baixados! Coloque na mesma pasta do juridico.html';
+  }, 500);
+}, 500);
+</script>
+</body>
+</html>
