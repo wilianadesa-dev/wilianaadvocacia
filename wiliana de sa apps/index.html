@@ -2410,7 +2410,10 @@
     <div id="page-processos" class="page">
       <div class="topbar">
         <div><h2>Processos</h2></div>
-        <button class="btn btn-gold" onclick="novoProcesso()">+ Novo Processo</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline" onclick="abrirImportarPJe()" style="font-size:0.82rem;padding:8px 14px">📋 Importar PJe</button>
+          <button class="btn btn-gold" onclick="novoProcesso()">+ Novo Processo</button>
+        </div>
       </div>
       <div class="content">
         <div class="search-bar">
@@ -5176,6 +5179,122 @@ async function saveDataSupabase(tabela, dados, id = null) {
 }
 
 // Inicializar quando DOM estiver pronto
+
+// ═══════════════════════════════════════════════
+// IMPORTAR PROCESSOS DO PJe (COLAR E IMPORTAR)
+// ═══════════════════════════════════════════════
+let _pjeProcessos = [];
+
+function abrirImportarPJe() {
+  document.getElementById('pje-texto').value = '';
+  document.getElementById('pje-preview').style.display = 'none';
+  document.getElementById('btn-importar-pje').style.display = 'none';
+  _pjeProcessos = [];
+  openModal('modal-importar-pje');
+}
+
+function extrairPJe() {
+  const texto = document.getElementById('pje-texto').value;
+  if (!texto.trim()) { showToast('Cole o texto do PJe primeiro!','error'); return; }
+
+  // Extrair números no padrão CNJ: NNNNNNN-DD.AAAA.J.TT.OOOO
+  const regex = /\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}/g;
+  const numeros = [...new Set(texto.match(regex) || [])];
+
+  if (!numeros.length) {
+    showToast('Nenhum número de processo encontrado. Verifique se copiou a lista do PJe.','error');
+    return;
+  }
+
+  // Checar duplicatas
+  const existentes = new Set((data.processos||[]).map(p => p.numero).filter(Boolean));
+
+  _pjeProcessos = numeros.map(num => ({
+    numero: num,
+    novo: !existentes.has(num),
+    tribunal: num.includes('.4.01.') ? 'TRF1' :
+              num.includes('.8.10.') ? 'TJMA' :
+              num.includes('.8.18.') ? 'TJPI' : 'TRF1',
+  }));
+
+  const novos = _pjeProcessos.filter(p => p.novo);
+  const dups  = _pjeProcessos.filter(p => !p.novo);
+
+  document.getElementById('pje-stat-total').textContent = _pjeProcessos.length;
+  document.getElementById('pje-stat-novos').textContent = novos.length;
+  document.getElementById('pje-stat-dup').textContent   = dups.length;
+
+  // Lista preview
+  document.getElementById('pje-lista').innerHTML = _pjeProcessos.map(p => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05)">
+      <span style="font-family:monospace;color:#60a5fa;font-size:0.75rem;flex:1">${esc(p.numero)}</span>
+      <span style="font-size:0.68rem">${p.tribunal}</span>
+      <span style="font-size:0.65rem;padding:2px 8px;border-radius:20px;${p.novo
+        ? 'background:rgba(74,222,128,0.12);color:#4ade80'
+        : 'background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.3)'}">
+        ${p.novo ? 'Novo' : 'Já existe'}
+      </span>
+    </div>
+  `).join('');
+
+  document.getElementById('pje-preview').style.display = 'block';
+  document.getElementById('btn-importar-pje').style.display = novos.length > 0 ? 'block' : 'none';
+
+  if (novos.length === 0) {
+    showToast('Todos os processos já estão no sistema!','info');
+  }
+}
+
+function importarPJe() {
+  const novos = _pjeProcessos.filter(p => p.novo);
+  if (!novos.length) return;
+
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  if (!data.processos) data.processos = [];
+
+  novos.forEach(p => {
+    data.processos.push({
+      id: Date.now() + Math.random(),
+      numero: p.numero,
+      clienteNome: '',
+      clienteId: '',
+      area: 'Previdenciário',
+      assunto: '',
+      fase: 'Inicial',
+      status: 'Em andamento',
+      tribunal: p.tribunal,
+      prazo: '',
+      obs: `Importado do PJe em ${hoje}`,
+      parceiro: '',
+      parceiroPct: 0,
+      honorariosContrato: 0,
+    });
+  });
+
+  saveData();
+  renderAll();
+  closeModal('modal-importar-pje');
+  showToast(`${novos.length} processos importados com sucesso!`, 'success');
+
+  // Sync Supabase em background
+  if (sessaoAtual) {
+    const uid = sessaoAtual.user.id;
+    const lotes = [];
+    for (let i=0; i<novos.length; i+=50) lotes.push(novos.slice(i,i+50));
+    lotes.reduce((p, lote) => p.then(async () => {
+      await sb.from('processos').insert(lote.map(proc => ({
+        user_id: uid,
+        numero: proc.numero,
+        area: 'Previdenciário',
+        fase: 'Inicial',
+        status: 'Em andamento',
+        tribunal: proc.tribunal,
+        obs: `Importado do PJe em ${hoje}`,
+      })));
+    }), Promise.resolve());
+  }
+}
+
 document.addEventListener('DOMContentLoaded', inicializarAuth);
 
 
@@ -13306,7 +13425,66 @@ function exportarExcel() {
     html += `</tbody></table><br>`;
   });
 
-  html += `</body></html>`;
+  html += `
+<!-- MODAL IMPORTAR PJe -->
+<div class="modal-overlay" id="modal-importar-pje">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-header">
+      <h3>📋 Importar Processos do PJe</h3>
+      <button class="modal-close" onclick="closeModal('modal-importar-pje')">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Instruções -->
+      <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:14px 16px;margin-bottom:18px">
+        <div style="font-size:0.78rem;color:#c9a84c;font-weight:600;margin-bottom:8px">Como fazer:</div>
+        <ol style="padding-left:16px;font-size:0.78rem;color:rgba(255,255,255,0.6);line-height:1.9">
+          <li>Abra o <strong style="color:#fff">PJe</strong> → <strong style="color:#fff">Consulta Processos</strong></li>
+          <li>Clique em <strong style="color:#fff">Buscar</strong> para listar seus processos</li>
+          <li>Selecione tudo com <strong style="color:#fff">Cmd+A</strong></li>
+          <li>Copie com <strong style="color:#fff">Cmd+C</strong></li>
+          <li>Cole aqui abaixo com <strong style="color:#fff">Cmd+V</strong></li>
+          <li>Repita para cada página do PJe</li>
+        </ol>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Cole o texto copiado do PJe</label>
+        <textarea id="pje-texto" rows="7" class="form-control"
+          placeholder="Cole aqui o texto copiado do PJe (Cmd+V)...
+
+Exemplo:
+1020124-39.2026.4.01.4000
+1020099-26.2026.4.01.4000"
+          style="font-family:monospace;font-size:0.8rem;resize:vertical"></textarea>
+      </div>
+
+      <!-- Preview -->
+      <div id="pje-preview" style="display:none;margin-top:4px">
+        <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px 16px;text-align:center;flex:1">
+            <div id="pje-stat-total" style="font-size:1.5rem;font-weight:700;color:#c9a84c">0</div>
+            <div style="font-size:0.68rem;color:rgba(255,255,255,0.4)">Extraídos</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px 16px;text-align:center;flex:1">
+            <div id="pje-stat-novos" style="font-size:1.5rem;font-weight:700;color:#4ade80">0</div>
+            <div style="font-size:0.68rem;color:rgba(255,255,255,0.4)">Novos</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px 16px;text-align:center;flex:1">
+            <div id="pje-stat-dup" style="font-size:1.5rem;font-weight:700;color:rgba(255,255,255,0.3)">0</div>
+            <div style="font-size:0.68rem;color:rgba(255,255,255,0.4)">Já existem</div>
+          </div>
+        </div>
+        <div id="pje-lista" style="max-height:180px;overflow-y:auto;border:1px solid rgba(255,255,255,0.07);border-radius:8px;font-size:0.75rem"></div>
+      </div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px">
+      <button class="btn btn-outline" onclick="extrairPJe()" style="flex:1">🔍 Extrair Processos</button>
+      <button class="btn btn-gold" id="btn-importar-pje" onclick="importarPJe()" style="flex:1;display:none">💾 Importar no Sistema</button>
+    </div>
+  </div>
+</div>
+
+</body></html>`;
 
   const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -13434,6 +13612,65 @@ if (!localStorage.getItem(STORAGE_KEY) && localStorage.getItem(LEGACY_STORAGE_KE
     <div class="modal-footer" style="justify-content:center;gap:12px;border-top:none;padding-top:0;padding-bottom:24px">
       <button class="btn btn-outline" onclick="adiarBackup()">Lembrar depois</button>
       <button class="btn btn-gold" onclick="exportarEFechar()">💾 Exportar agora</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL IMPORTAR PJe -->
+<div class="modal-overlay" id="modal-importar-pje">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-header">
+      <h3>📋 Importar Processos do PJe</h3>
+      <button class="modal-close" onclick="closeModal('modal-importar-pje')">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Instruções -->
+      <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:14px 16px;margin-bottom:18px">
+        <div style="font-size:0.78rem;color:#c9a84c;font-weight:600;margin-bottom:8px">Como fazer:</div>
+        <ol style="padding-left:16px;font-size:0.78rem;color:rgba(255,255,255,0.6);line-height:1.9">
+          <li>Abra o <strong style="color:#fff">PJe</strong> → <strong style="color:#fff">Consulta Processos</strong></li>
+          <li>Clique em <strong style="color:#fff">Buscar</strong> para listar seus processos</li>
+          <li>Selecione tudo com <strong style="color:#fff">Cmd+A</strong></li>
+          <li>Copie com <strong style="color:#fff">Cmd+C</strong></li>
+          <li>Cole aqui abaixo com <strong style="color:#fff">Cmd+V</strong></li>
+          <li>Repita para cada página do PJe</li>
+        </ol>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Cole o texto copiado do PJe</label>
+        <textarea id="pje-texto" rows="7" class="form-control"
+          placeholder="Cole aqui o texto copiado do PJe (Cmd+V)...
+
+Exemplo:
+1020124-39.2026.4.01.4000
+1020099-26.2026.4.01.4000"
+          style="font-family:monospace;font-size:0.8rem;resize:vertical"></textarea>
+      </div>
+
+      <!-- Preview -->
+      <div id="pje-preview" style="display:none;margin-top:4px">
+        <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px 16px;text-align:center;flex:1">
+            <div id="pje-stat-total" style="font-size:1.5rem;font-weight:700;color:#c9a84c">0</div>
+            <div style="font-size:0.68rem;color:rgba(255,255,255,0.4)">Extraídos</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px 16px;text-align:center;flex:1">
+            <div id="pje-stat-novos" style="font-size:1.5rem;font-weight:700;color:#4ade80">0</div>
+            <div style="font-size:0.68rem;color:rgba(255,255,255,0.4)">Novos</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:10px 16px;text-align:center;flex:1">
+            <div id="pje-stat-dup" style="font-size:1.5rem;font-weight:700;color:rgba(255,255,255,0.3)">0</div>
+            <div style="font-size:0.68rem;color:rgba(255,255,255,0.4)">Já existem</div>
+          </div>
+        </div>
+        <div id="pje-lista" style="max-height:180px;overflow-y:auto;border:1px solid rgba(255,255,255,0.07);border-radius:8px;font-size:0.75rem"></div>
+      </div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px">
+      <button class="btn btn-outline" onclick="extrairPJe()" style="flex:1">🔍 Extrair Processos</button>
+      <button class="btn btn-gold" id="btn-importar-pje" onclick="importarPJe()" style="flex:1;display:none">💾 Importar no Sistema</button>
     </div>
   </div>
 </div>
