@@ -2416,10 +2416,31 @@
         </div>
       </div>
       <div class="content">
-        <div class="search-bar">
-          <input class="search-input" type="text" placeholder="Buscar por número, cliente ou assunto..." oninput="buscarProcessos(this.value)">
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+          <input class="search-input" type="text" id="processos-search"
+            placeholder="🔍 Número, cliente, tribunal..."
+            oninput="buscarProcessos(this.value)"
+            style="flex:1;min-width:180px">
+          <select id="filtro-status-proc" onchange="filtrarProcessos()" style="padding:10px 12px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-family:'DM Sans',sans-serif;font-size:0.82rem;outline:none">
+            <option value="">Todos os status</option>
+            <option value="Em andamento">Em andamento</option>
+            <option value="Ganho">Ganho</option>
+            <option value="Perdido">Perdido</option>
+            <option value="Arquivado">Arquivado</option>
+          </select>
+          <select id="filtro-tribunal-proc" onchange="filtrarProcessos()" style="padding:10px 12px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-family:'DM Sans',sans-serif;font-size:0.82rem;outline:none">
+            <option value="">Todos os tribunais</option>
+            <option value="TRF1">TRF1</option>
+            <option value="TJMA">TJMA</option>
+            <option value="TJPI">TJPI</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:rgba(255,255,255,0.5);cursor:pointer;white-space:nowrap;padding:0 4px">
+            <input type="checkbox" id="filtro-sem-cliente" onchange="filtrarProcessos()" style="width:14px;height:14px;accent-color:#1f6b63">
+            Sem cliente
+          </label>
+          <div id="processos-count" style="font-size:0.78rem;color:rgba(255,255,255,0.4);white-space:nowrap;padding:0 4px"></div>
         </div>
-        <div id="processos-narrativa">
+        <div id="processos-narrativa" style="display:none">
 <div class="narrative-grid">
           <div class="narrative-panel">
             <h3>Casos que pedem decisao</h3>
@@ -2434,18 +2455,17 @@
         </div>
         </div><!-- fim processos-narrativa -->
 
-<div id="processos-tabela-wrap" style="display:none">
+<div id="processos-tabela-wrap">
 <div class="card">
           <div class="story-table-wrap">
             <table id="processos-table">
               <thead>
                 <tr>
-                  <th>Nº Processo</th>
+                  <th>Nº Processo / Tribunal</th>
                   <th>Cliente</th>
-                  <th>Área</th>
                   <th>Fase</th>
                   <th>Status</th>
-                  <th>Próx. Prazo</th>
+                  <th>Prazo</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -5296,54 +5316,265 @@ function extrairPJe() {
   }
 }
 
-function importarPJe() {
+async function importarPJe() {
   const novos = _pjeProcessos.filter(p => p.novo);
-  if (!novos.length) return;
+  if (!novos.length) { showToast('Nenhum processo novo para importar!', 'info'); return; }
+
+  const btn = document.getElementById('btn-importar-pje');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Importando...'; }
 
   const hoje = new Date().toLocaleDateString('pt-BR');
   if (!data.processos) data.processos = [];
+  if (!data.clientes)  data.clientes  = [];
+  let salvosProc = 0, salvosCliente = 0, erros = 0;
 
-  novos.forEach(p => {
-    data.processos.push({
-      id: Date.now() + Math.random(),
-      numero: p.numero,
-      clienteNome: p.clienteNome || '',
-      clienteId: '',
-      area: 'Previdenciário',
-      assunto: p.ultimoMov || '',
-      fase: 'Inicial',
-      status: 'Em andamento',
-      tribunal: p.tribunal,
-      prazo: '',
-      obs: `Importado do PJe em ${hoje}${p.orgao ? ' · ' + p.orgao : ''}`,
-      parceiro: '',
-      parceiroPct: 0,
+  const uid = sessaoAtual?.user?.id;
+
+  for (let i = 0; i < novos.length; i++) {
+    const p = novos[i];
+
+    // ── A. Criar cliente se tiver nome e não existir ──
+    let clienteId = '';
+    if (p.clienteNome && p.clienteNome.trim()) {
+      const nomeNorm = p.clienteNome.trim().toUpperCase();
+
+      // Checar se já existe no data local
+      let clienteExist = data.clientes.find(c =>
+        (c.nome||'').toUpperCase() === nomeNorm
+      );
+
+      if (!clienteExist && uid) {
+        // Criar no Supabase
+        const { data: cInsert, error: cErr } = await sb.from('clientes')
+          .insert({
+            user_id:   uid,
+            nome:      p.clienteNome.trim(),
+            tipo:      'Pessoa Física',
+            tipo_caso: 'Previdenciário',
+            obs:       `Criado automaticamente via importação PJe em ${hoje}`,
+            ativo:     true,
+          })
+          .select('id, nome')
+          .single();
+
+        if (!cErr && cInsert) {
+          clienteId = cInsert.id;
+          // Adicionar ao data local
+          data.clientes.push({
+            id:       cInsert.id,
+            nome:     cInsert.nome,
+            doc:      '',
+            tel:      '',
+            email:    '',
+            tipo:     'Pessoa Física',
+            tipoCaso: 'Previdenciário',
+            obs:      `Criado via importação PJe em ${hoje}`,
+          });
+          salvosCliente++;
+        }
+      } else if (clienteExist) {
+        clienteId = clienteExist.id;
+      }
+    }
+
+    // ── B. Criar processo ─────────────────────────────
+    const procData = {
+      numero:       p.numero,
+      clienteNome:  p.clienteNome || '',
+      clienteId:    clienteId,
+      area:         'Previdenciário',
+      assunto:      p.ultimoMov || '',
+      fase:         'Inicial',
+      status:       'Em andamento',
+      tribunal:     p.tribunal || '',
+      prazo:        '',
+      obs:          `Importado do PJe em ${hoje}${p.orgao ? ' · ' + p.orgao : ''}`,
+      parceiro:     '',
+      parceiroPct:  0,
       honorariosContrato: 0,
-    });
-  });
+    };
 
+    if (uid) {
+      const { data: pInsert, error: pErr } = await sb.from('processos')
+        .insert({
+          user_id:      uid,
+          numero:       procData.numero,
+          cliente_id:   clienteId || null,
+          cliente_nome: procData.clienteNome || null,
+          area:         'Previdenciário',
+          fase:         'Inicial',
+          status:       'Em andamento',
+          tribunal:     procData.tribunal || null,
+          obs:          procData.obs,
+        })
+        .select('id')
+        .single();
+
+      if (!pErr && pInsert) {
+        procData.id = pInsert.id;
+        salvosProc++;
+      } else if (pErr?.code === '23505') {
+        procData.id = Date.now() + Math.random();
+        salvosProc++;
+      } else {
+        erros++;
+        procData.id = Date.now() + Math.random();
+      }
+    } else {
+      procData.id = Date.now() + Math.random();
+      salvosProc++;
+    }
+
+    data.processos.push(procData);
+
+    // Atualizar progresso a cada 10
+    if (i % 10 === 0) {
+      if (btn) btn.textContent = `⏳ ${i+1} de ${novos.length}...`;
+      await new Promise(r => setTimeout(r, 10));
+    }
+  }
+
+  // ── C. Salvar localStorage e atualizar tela ───────
   saveData();
   renderAll();
   closeModal('modal-importar-pje');
-  showToast(`${novos.length} processos importados com sucesso!`, 'success');
 
-  // Sync Supabase em background
-  if (sessaoAtual) {
-    const uid = sessaoAtual.user.id;
-    const lotes = [];
-    for (let i=0; i<novos.length; i+=50) lotes.push(novos.slice(i,i+50));
-    lotes.reduce((p, lote) => p.then(async () => {
-      await sb.from('processos').insert(lote.map(proc => ({
-        user_id: uid,
-        numero: proc.numero,
-        area: 'Previdenciário',
-        fase: 'Inicial',
-        status: 'Em andamento',
-        tribunal: proc.tribunal,
-        obs: `Importado do PJe em ${hoje}`,
-      })));
-    }), Promise.resolve());
+  let msg = `${salvosProc} processos importados!`;
+  if (salvosCliente > 0) msg += ` ${salvosCliente} clientes criados!`;
+  if (erros > 0) msg += ` (${erros} erros)`;
+  showToast(msg, 'success');
+
+  if (btn) { btn.disabled = false; btn.textContent = '💾 Importar no Sistema'; }
+}
+
+
+// ═══════════════════════════════════════════════
+// PREENCHER CLIENTE RÁPIDO NO PROCESSO
+// ═══════════════════════════════════════════════
+let _preencherProcId = null;
+let _clienteSelecionado = null;
+
+function preencherCliente(procId) {
+  _preencherProcId = procId;
+  _clienteSelecionado = null;
+  const proc = data.processos.find(p => p.id === procId || String(p.id) === String(procId));
+
+  document.getElementById('preencher-proc-num').textContent =
+    proc ? proc.numero : procId;
+  document.getElementById('preencher-busca').value = '';
+  document.getElementById('preencher-nome-novo').value = '';
+  document.getElementById('preencher-sugestoes').style.display = 'none';
+  document.getElementById('preencher-sugestoes').innerHTML = '';
+  openModal('modal-preencher-cliente');
+  setTimeout(() => document.getElementById('preencher-busca').focus(), 100);
+}
+
+function buscarClienteRapido(q) {
+  const sugestoes = document.getElementById('preencher-sugestoes');
+  if (!q || q.length < 2) { sugestoes.style.display='none'; return; }
+
+  const ql = q.toLowerCase();
+  const matches = (data.clientes||[])
+    .filter(c => (c.nome||'').toLowerCase().includes(ql))
+    .slice(0, 8);
+
+  if (!matches.length) { sugestoes.style.display='none'; return; }
+
+  sugestoes.style.display = 'block';
+  sugestoes.innerHTML = matches.map(c => `
+    <div onclick="selecionarClienteRapido('${c.id}','${esc(c.nome)}')"
+      style="padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);
+        font-size:0.84rem;transition:background 0.15s"
+      onmouseover="this.style.background='rgba(31,107,99,0.15)'"
+      onmouseout="this.style.background='transparent'">
+      <strong>${esc(c.nome)}</strong>
+      ${c.tel ? `<span style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-left:8px">${esc(c.tel)}</span>` : ''}
+    </div>
+  `).join('');
+}
+
+function selecionarClienteRapido(id, nome) {
+  _clienteSelecionado = { id, nome };
+  document.getElementById('preencher-busca').value = nome;
+  document.getElementById('preencher-sugestoes').style.display = 'none';
+  document.getElementById('preencher-nome-novo').value = '';
+  showToast(`Cliente selecionado: ${nome}`, 'info');
+}
+
+async function confirmarCliente() {
+  let clienteId   = '';
+  let clienteNome = '';
+
+  if (_clienteSelecionado) {
+    // Usar cliente existente
+    clienteId   = _clienteSelecionado.id;
+    clienteNome = _clienteSelecionado.nome;
+  } else {
+    // Criar novo cliente
+    const nome = document.getElementById('preencher-nome-novo').value.trim();
+    if (!nome) { showToast('Digite o nome do cliente!','error'); return; }
+
+    const hoje = new Date().toLocaleDateString('pt-BR');
+
+    if (sessaoAtual) {
+      const { data: cInsert, error } = await sb.from('clientes')
+        .insert({
+          user_id:   sessaoAtual.user.id,
+          nome:      nome,
+          tipo:      'Pessoa Física',
+          tipo_caso: 'Previdenciário',
+          ativo:     true,
+          obs:       `Criado via preenchimento rápido em ${hoje}`,
+        })
+        .select('id, nome')
+        .single();
+
+      if (!error && cInsert) {
+        clienteId   = cInsert.id;
+        clienteNome = cInsert.nome;
+        data.clientes.push({
+          id: cInsert.id, nome: cInsert.nome,
+          doc:'', tel:'', email:'',
+          tipo:'Pessoa Física', tipoCaso:'Previdenciário',
+          obs:`Criado via preenchimento rápido em ${hoje}`,
+        });
+      } else {
+        showToast('Erro ao criar cliente: ' + (error?.message||''), 'error');
+        return;
+      }
+    } else {
+      clienteId   = Date.now() + Math.random();
+      clienteNome = nome;
+      data.clientes.push({
+        id:clienteId, nome:clienteNome,
+        doc:'', tel:'', email:'',
+        tipo:'Pessoa Física', tipoCaso:'Previdenciário',
+      });
+    }
   }
+
+  // Atualizar o processo
+  const idx = data.processos.findIndex(p =>
+    p.id === _preencherProcId || String(p.id) === String(_preencherProcId)
+  );
+
+  if (idx !== -1) {
+    data.processos[idx].clienteNome = clienteNome;
+    data.processos[idx].clienteId   = clienteId;
+
+    // Atualizar no Supabase
+    if (sessaoAtual && typeof data.processos[idx].id === 'string') {
+      await sb.from('processos')
+        .update({ cliente_nome: clienteNome, cliente_id: clienteId })
+        .eq('id', data.processos[idx].id)
+        .eq('user_id', sessaoAtual.user.id);
+    }
+  }
+
+  saveData();
+  renderAll();
+  closeModal('modal-preencher-cliente');
+  showToast(`Cliente "${clienteNome}" vinculado ao processo!`, 'success');
 }
 
 document.addEventListener('DOMContentLoaded', inicializarAuth);
@@ -11428,12 +11659,21 @@ function salvarProcesso() {
   if (!num) { showToast('Informe o número do processo.','error'); return; return; }
   const editId = document.getElementById('p-edit-id').value;
   const clienteNomeInput = document.getElementById('p-cliente').value.trim();
-  const clienteMatch = data.clientes.find(c => c.nome.toLowerCase() === clienteNomeInput.toLowerCase());
+  // Buscar cliente: primeiro exato, depois parcial
+  let clienteMatch = data.clientes.find(c =>
+    c.nome.toLowerCase().trim() === clienteNomeInput.toLowerCase().trim()
+  );
+  if (!clienteMatch && clienteNomeInput.length > 3) {
+    clienteMatch = data.clientes.find(c =>
+      c.nome.toLowerCase().includes(clienteNomeInput.toLowerCase()) ||
+      clienteNomeInput.toLowerCase().includes(c.nome.toLowerCase())
+    );
+  }
   const ppParceiro = getParceiroDados('pp');
   const dados = {
     numero: num,
     clienteId: clienteMatch ? clienteMatch.id : '',
-    clienteNome: clienteNomeInput || '—',
+    clienteNome: clienteNomeInput || '',
     area: document.getElementById('p-area').value,
     assunto: document.getElementById('p-assunto').value,
     fase: document.getElementById('p-fase').value,
@@ -11561,6 +11801,21 @@ function salvarProcesso() {
     }
   }
 
+  // Criar cliente automaticamente se não existir
+  if (clienteNomeInput && !clienteMatch) {
+    const novoCliente = {
+      id: Date.now() + 1,
+      nome: clienteNomeInput,
+      doc: '', tel: '', email: '',
+      tipo: 'Pessoa Física',
+      tipoCaso: dados.area || 'Previdenciário',
+      obs: 'Criado automaticamente ao cadastrar processo',
+    };
+    data.clientes.push(novoCliente);
+    dados.clienteId = novoCliente.id;
+    syncToSupabase('clientes', novoCliente);
+    showToast(`Cliente "${clienteNomeInput}" criado automaticamente!`, 'info');
+  }
   saveData(); syncToSupabase('processos', dados).then(()=>mostrarSyncStatus(true)).catch(()=>mostrarSyncStatus(false)); closeModal('modal-processo'); renderAll(); showToast('Processo salvo com sucesso!','success');
   document.getElementById('p-edit-id').value = '';
   ['p-numero','p-assunto','p-tribunal','p-prazo','p-obs'].forEach(id => document.getElementById(id).value = '');
@@ -11682,33 +11937,82 @@ function renderProcessNarratives() {
   }).join('');
 }
 
-function renderProcessos() {
-  const tbody = document.getElementById('processos-tbody');
-  const empty = document.getElementById('processos-empty');
-  renderProcessNarratives();
+function filtrarProcessos() {
+  const q      = (document.getElementById('processos-search')?.value||'').toLowerCase().trim();
+  const status = document.getElementById('filtro-status-proc')?.value||'';
+  const trib   = document.getElementById('filtro-tribunal-proc')?.value||'';
+  const tbody  = document.getElementById('processos-tbody');
+  const empty  = document.getElementById('processos-empty');
+  if (!tbody) return;
+
+  const semCliente = document.getElementById('filtro-sem-cliente')?.checked || false;
+  let itens = [...(data.processos||[])];
+  if (q)          itens = itens.filter(p =>
+    (p.numero||'').toLowerCase().includes(q) ||
+    (p.clienteNome||'').toLowerCase().includes(q) ||
+    (p.assunto||'').toLowerCase().includes(q) ||
+    (p.tribunal||'').toLowerCase().includes(q) ||
+    (p.obs||'').toLowerCase().includes(q)
+  );
+  if (status)     itens = itens.filter(p => p.status === status);
+  if (trib)       itens = itens.filter(p => (p.tribunal||'').includes(trib));
+  if (semCliente) itens = itens.filter(p => !p.clienteNome || p.clienteNome.trim() === '' || p.clienteNome === '—');
+
+  const countEl = document.getElementById('processos-count');
+  if (countEl) countEl.textContent = `${itens.length} processo${itens.length!==1?'s':''}`;
+
   tbody.innerHTML = '';
-  if (data.processos.length === 0) { empty.style.display='block'; return; }
+  if (!itens.length) { empty.style.display='block'; return; }
   empty.style.display='none';
-  data.processos.forEach(p => {
+
+  itens.forEach(p => {
     const d = daysUntil(p.prazo);
-    const prazoStr = p.prazo ? `${fmtDate(p.prazo)} ${d <= 5 ? '⚠️' : ''}` : '—';
+    const prazoStr = p.prazo
+      ? `${fmtDate(p.prazo)}${d !== null && d <= 5 ? ' ⚠️' : ''}`
+      : '—';
     tbody.innerHTML += `<tr>
-      <td><strong>${esc(p.numero)}</strong></td>
-      <td>${esc(p.clienteNome)}</td>
-      <td>${esc(p.area)}</td>
-      <td>${esc(p.fase)}</td>
+      <td style="max-width:190px">
+        <div style="font-family:monospace;font-size:0.76rem;font-weight:600;color:var(--teal)">${esc(p.numero)}</div>
+        ${p.tribunal ? `<div style="font-size:0.68rem;color:var(--muted);margin-top:2px">${esc(p.tribunal)}</div>` : ''}
+      </td>
+      <td>
+        <div style="font-weight:500;font-size:0.85rem">${esc(p.clienteNome||'—')}</div>
+        ${p.area ? `<div style="font-size:0.71rem;color:var(--muted)">${esc(p.area)}</div>` : ''}
+      </td>
+      <td style="font-size:0.82rem">${esc(p.fase||'—')}</td>
       <td>${statusBadge(p.status)}</td>
-      <td>${prazoStr}</td>
+      <td style="font-size:0.78rem">${prazoStr}</td>
       <td><div class="action-btns">
-        <button class="btn btn-outline btn-sm" onclick="verProcesso(${p.id})">👁 Ver</button>
-        <button class="btn btn-gold btn-sm" onclick="editarProcesso(${p.id})">✏️ Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="deletar('processos',${p.id})">Excluir</button>
+        <button class="btn btn-outline btn-sm" onclick="verProcesso(${p.id})">👁</button>
+        <button class="btn btn-gold btn-sm" onclick="editarProcesso(${p.id})">✏️</button>
+        ${!p.clienteNome || p.clienteNome.trim()==='' || p.clienteNome==='—'
+          ? `<button class="btn btn-teal btn-sm" onclick="preencherCliente(this.dataset.id)" data-id="${p.id}" title="Adicionar cliente" style="background:rgba(31,107,99,0.3);border:1px solid rgba(31,107,99,0.5);color:#2d9186">👤+</button>`
+          : ''}
+        <button class="btn btn-danger btn-sm" onclick="deletar('processos',${p.id})">✕</button>
       </div></td>
-    </tr>`;
+    </tr>\`;
   });
 }
 
-// === CLIENTES ===
+function renderProcessos() {
+  const empty = document.getElementById('processos-empty');
+  renderProcessNarratives();
+  if (!data.processos || data.processos.length === 0) {
+    if(empty) empty.style.display='block';
+    const tbody = document.getElementById('processos-tbody');
+    if(tbody) tbody.innerHTML='';
+    const countEl = document.getElementById('processos-count');
+    if(countEl) countEl.textContent = '0 processos';
+    return;
+  }
+  filtrarProcessos();
+}
+
+function buscarProcessos(q) {
+  const el = document.getElementById('processos-search');
+  if (el && el.value !== q) el.value = q;
+  filtrarProcessos();
+}
 function salvarCliente() {
   const nome = document.getElementById('c-nome').value.trim();
   if (!nome) { showToast('Informe o nome do cliente.','error'); return; return; }
@@ -11727,10 +12031,29 @@ function salvarCliente() {
     parceiro: getParceiroDados('cp').parceiro,
     parceiroPct: getParceiroDados('cp').parceiroPct
   };
+  let novoId;
   if (editId) {
     const idx = data.clientes.findIndex(x => x.id == editId);
-    if (idx !== -1) data.clientes[idx] = { ...data.clientes[idx], ...dados };
-  } else { data.clientes.push({ id: Date.now(), ...dados }); }
+    if (idx !== -1) { data.clientes[idx] = { ...data.clientes[idx], ...dados }; novoId = data.clientes[idx].id; }
+  } else {
+    novoId = Date.now();
+    data.clientes.push({ id: novoId, ...dados });
+
+    // ── Vincular processos que têm o mesmo nome ──────────
+    const nomeNorm = nome.toLowerCase().trim();
+    let vinculados = 0;
+    (data.processos||[]).forEach(p => {
+      const pNome = (p.clienteNome||'').toLowerCase().trim();
+      if (pNome === nomeNorm && (!p.clienteId || p.clienteId === '')) {
+        p.clienteId = novoId;
+        vinculados++;
+      }
+    });
+    if (vinculados > 0) {
+      showToast(`${vinculados} processo(s) vinculado(s) automaticamente!`, 'info');
+    }
+  }
+  dados.id = novoId;
   data.clientes.sort((a,b) => (a.nome||"").localeCompare(b.nome||"","pt-BR",{sensitivity:"base"}));
   saveData(); syncToSupabase('clientes', dados).then(()=>mostrarSyncStatus(true)).catch(()=>mostrarSyncStatus(false)); closeModal('modal-cliente'); renderAll(); showToast('Cliente salvo com sucesso!','success');
   document.getElementById('c-edit-id').value = '';
@@ -13535,6 +13858,41 @@ Exemplo:
   </div>
 </div>
 
+
+<!-- MODAL PREENCHER CLIENTE RÁPIDO -->
+<div class="modal-overlay" id="modal-preencher-cliente">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <h3>👤 Adicionar Cliente ao Processo</h3>
+      <button class="modal-close" onclick="closeModal('modal-preencher-cliente')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="preencher-proc-num" style="font-family:monospace;font-size:0.8rem;color:var(--teal);margin-bottom:16px;padding:8px 12px;background:rgba(31,107,99,0.1);border-radius:8px"></div>
+
+      <div class="form-group">
+        <label class="form-label">Buscar cliente existente</label>
+        <input class="form-control" id="preencher-busca"
+          placeholder="Digite o nome do cliente..."
+          oninput="buscarClienteRapido(this.value)">
+      </div>
+
+      <div id="preencher-sugestoes" style="max-height:180px;overflow-y:auto;margin-bottom:12px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;display:none"></div>
+
+      <div style="text-align:center;color:rgba(255,255,255,0.3);font-size:0.78rem;margin:8px 0">— ou —</div>
+
+      <div class="form-group">
+        <label class="form-label">Criar novo cliente com este nome</label>
+        <input class="form-control" id="preencher-nome-novo"
+          placeholder="Nome completo do cliente">
+      </div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px">
+      <button class="btn btn-outline" onclick="closeModal('modal-preencher-cliente')" style="flex:1">Cancelar</button>
+      <button class="btn btn-gold" onclick="confirmarCliente()" style="flex:1">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
 </body></html>`;
 
   const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8' });
@@ -13722,6 +14080,41 @@ Exemplo:
     <div class="modal-footer" style="display:flex;gap:8px">
       <button class="btn btn-outline" onclick="extrairPJe()" style="flex:1">🔍 Extrair Processos</button>
       <button class="btn btn-gold" id="btn-importar-pje" onclick="importarPJe()" style="flex:1;display:none">💾 Importar no Sistema</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL PREENCHER CLIENTE RÁPIDO -->
+<div class="modal-overlay" id="modal-preencher-cliente">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <h3>👤 Adicionar Cliente ao Processo</h3>
+      <button class="modal-close" onclick="closeModal('modal-preencher-cliente')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="preencher-proc-num" style="font-family:monospace;font-size:0.8rem;color:var(--teal);margin-bottom:16px;padding:8px 12px;background:rgba(31,107,99,0.1);border-radius:8px"></div>
+
+      <div class="form-group">
+        <label class="form-label">Buscar cliente existente</label>
+        <input class="form-control" id="preencher-busca"
+          placeholder="Digite o nome do cliente..."
+          oninput="buscarClienteRapido(this.value)">
+      </div>
+
+      <div id="preencher-sugestoes" style="max-height:180px;overflow-y:auto;margin-bottom:12px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;display:none"></div>
+
+      <div style="text-align:center;color:rgba(255,255,255,0.3);font-size:0.78rem;margin:8px 0">— ou —</div>
+
+      <div class="form-group">
+        <label class="form-label">Criar novo cliente com este nome</label>
+        <input class="form-control" id="preencher-nome-novo"
+          placeholder="Nome completo do cliente">
+      </div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px">
+      <button class="btn btn-outline" onclick="closeModal('modal-preencher-cliente')" style="flex:1">Cancelar</button>
+      <button class="btn btn-gold" onclick="confirmarCliente()" style="flex:1">💾 Salvar</button>
     </div>
   </div>
 </div>
