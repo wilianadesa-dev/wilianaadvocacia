@@ -1,0 +1,38 @@
+{
+  "name": "Wiliana de Sá Advocacia",
+  "short_name": "Wiliana Adv",
+  "description": "Sistema de gestão jurídica — Wiliana de Sá Advocacia",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1929",
+  "theme_color": "#0b1929",
+  "orientation": "portrait-primary",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Mesa de Comando",
+      "url": "/",
+      "description": "Abrir dashboard"
+    },
+    {
+      "name": "Novo Processo",
+      "url": "/#processos",
+      "description": "Cadastrar processo"
+    }
+  ]
+}
