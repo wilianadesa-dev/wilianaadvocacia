@@ -4891,7 +4891,7 @@ function protegerRotas() {
 
   if (!isAdmin && !isUser) {
     abasFinanceiras.forEach(aba => {
-      const navItem = document.querySelector(`[onclick*="${aba}"]`);
+      const navItem = document.querySelector('[onclick*="' + (aba) + '"]');
       if(navItem) {
         navItem.style.opacity = '0.35';
         navItem.style.pointerEvents = 'none';
@@ -5439,7 +5439,7 @@ async function importarPJe() {
   renderAll();
   closeModal('modal-importar-pje');
 
-  let msg = `${salvosProc} processos importados!`;
+  let msg = (salvosProc) + ' processos importados!';
   if (salvosCliente > 0) msg += ` ${salvosCliente} clientes criados!`;
   if (erros > 0) msg += ` (${erros} erros)`;
   showToast(msg, 'success');
@@ -9450,13 +9450,13 @@ function setTodayDate() {
 function populateSelects() {
   // Fill datalists with client names for autocomplete
   // Use requestAnimationFrame to not block UI
-  const names = data.clientes.slice(0, 500).map(c => `<option value="${esc(c.nome||'')}">`).join('');
+  const names = data.clientes.slice(0, 500).map(c => '<option value="' + (esc(c.nome||'')) + '">').join('');
   ['p-cliente-list','ct-cliente-list','h-cliente-list','at-cliente-list','aud-cliente-list','per-cliente-list','prev-cliente-list','rpv-cliente-list'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = names;
   });
   // Fill parceiro datalists
-  const parcNomes = (data.parceiros||[]).map(p => `<option value="${p.nome}">`).join('');
+  const parcNomes = (data.parceiros||[]).map(p => '<option value="' + (p.nome) + '">').join('');
   ['at-parceiro-list','pp-parceiro-list','cp-parceiro-list',
    'h-parceiro-list','pr2-parceiro-list','ph-parceiro-list'].forEach(id => {
     const el = document.getElementById(id);
@@ -9506,7 +9506,7 @@ function filterTable(tableId, q) {
   q = q.toLowerCase().trim();
 
   // Tentar tabela primeiro
-  const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+  const rows = document.querySelectorAll('#' + (tableId) + ' tbody tr');
   if (rows.length > 0) {
     rows.forEach(r => {
       r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
@@ -9515,7 +9515,7 @@ function filterTable(tableId, q) {
   }
 
   // Fallback: cards com data-search ou texto
-  const cards = document.querySelectorAll(`#${tableId} [data-search], #${tableId} .card-item`);
+  const cards = document.querySelectorAll('#' + (tableId) + ' [data-search], #' + (tableId) + ' .card-item');
   cards.forEach(c => {
     const txt = (c.dataset.search || c.textContent || '').toLowerCase();
     c.style.display = txt.includes(q) ? '' : 'none';
@@ -10911,8 +10911,8 @@ function renderAgenda() {
     const dateStr = calAno + '-' + String(calMes+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
     const isHoje = thisDate.getTime() === hoje.getTime();
     const evs = eventos[dateStr] || [];
-    const evHtml = evs.slice(0,2).map(e => `<span class="cal-evento ${e.cls}" title="${e.label}">${e.label}</span>`).join('');
-    const mais = evs.length > 2 ? `<div class="cal-mais">+${evs.length-2} mais</div>` : '';
+    const evHtml = evs.slice(0,2).map(e => '<span class="cal-evento ' + (e.cls) + '" title="' + (e.label) + '">' + (e.label) + '</span>').join('');
+    const mais = evs.length > 2 ? '<div class="cal-mais">+' + (evs.length-2) + ' mais</div>' : '';
     cells += `<div class="cal-day${isHoje?' hoje':''}">
       <div class="cal-day-num">${d}</div>
       ${evHtml}${mais}
@@ -11294,7 +11294,7 @@ function verCliente(id) {
   const docsPendentes = getPendenciasDocumentaisCliente(c, ctx);
   const mensagemRetorno = buildMensagemRetornoCliente(c, ctx);
   const totalAberto = ctx.honorarios.filter(h => h.status !== 'Recebido').reduce((sum, h) => sum + (parseFloat(h.valor) || 0), 0);
-  const ultimoContato = ctx.ultimoAtendimento ? `${fmtDate(ctx.ultimoAtendimento.data)} · ${esc((ctx.ultimoAtendimento.obs || '').split('\n')[0] || 'Atendimento registrado')}` : 'Sem atendimento registrado.';
+  const ultimoContato = ctx.ultimoAtendimento ? (fmtDate(ctx.ultimoAtendimento.data)) + ' · ' + (esc((ctx.ultimoAtendimento.obs || '').split('\n')[0] || 'Atendimento registrado')) : 'Sem atendimento registrado.';
   document.getElementById('ver-cliente-body').innerHTML = `
     <div class="retorno-wrap">
       <div class="retorno-hero">
@@ -11918,7 +11918,7 @@ function renderProcessNarratives() {
 
   radarEl.innerHTML = ranked.slice(0, 4).map(({ p, ctx }) => {
     const atraso = ctx.relatedHon.filter(h => h.status === 'Em atraso').length;
-    const atendTxt = ctx.lastAtendimento?.data ? `Ultimo retorno em ${fmtDate(ctx.lastAtendimento.data)}` : 'Sem atendimento recente vinculado';
+    const atendTxt = ctx.lastAtendimento?.data ? 'Ultimo retorno em ' + (fmtDate(ctx.lastAtendimento.data)) : 'Sem atendimento recente vinculado';
     return `
       <div class="story-card-line">
         <div class="story-card-title">${esc(p.clienteNome || p.numero || 'Caso sem identificacao')}</div>
@@ -12074,9 +12074,9 @@ function getClienteContext(c) {
     .sort((a,b) => a.data.localeCompare(b.data))[0];
   let nextStep = 'Revisar historico do cliente e registrar proximo contato.';
   if (proximoPrazo) {
-    nextStep = `Retornar com atualizacao antes de ${fmtDate(proximoPrazo.data)}.`;
+    nextStep = 'Retornar com atualizacao antes de ' + fmtDate(proximoPrazo.data) + '.';
   } else if (processos.length === 0 && c.tipoCaso) {
-    nextStep = `Avaliar conversao do caso de ${c.tipoCaso} em novo processo.`;
+    nextStep = 'Avaliar conversao do caso de ' + (c.tipoCaso) + ' em novo processo.';
   } else if (ultimoAtendimento) {
     nextStep = 'Transformar o ultimo atendimento em acao concreta ou retorno.';
   }
@@ -12084,26 +12084,38 @@ function getClienteContext(c) {
 }
 
 function buildMensagemRetornoCliente(c, ctx) {
-  const partes = [];
-  partes.push(`Olá, ${c.nome}.`);
+  var partes = [];
+  partes.push('Ola, ' + c.nome + '.');
   if (ctx.processos.length > 0) {
-    const proc = ctx.processos[0];
-    partes.push(`Seu caso segue ${proc.status ? proc.status.toLowerCase() : 'em andamento'}${proc.fase ? `, na fase ${proc.fase.toLowerCase()}` : ''}.`);
+    var proc = ctx.processos[0];
+    var _st = proc.status ? proc.status.toLowerCase() : 'em andamento';
+    var _fs = proc.fase ? ', na fase ' + proc.fase.toLowerCase() : '';
+    partes.push('Seu caso segue ' + _st + _fs + '.');
   } else if (c.tipoCaso) {
-    partes.push(`Estamos acompanhando sua demanda de ${c.tipoCaso.toLowerCase()}.`);
+    partes.push('Estamos acompanhando sua demanda de ' + c.tipoCaso.toLowerCase() + '.');
   } else {
     partes.push('Estamos acompanhando sua situacao e organizando o proximo movimento.');
   }
   if (ctx.proximoPrazo) {
-    const dias = daysUntil(ctx.proximoPrazo.data);
-    partes.push(dias < 0
-      ? `Existe um prazo vencido que estamos tratando com prioridade: ${ctx.proximoPrazo.desc}.`
-      : `Nosso proximo marco e ${ctx.proximoPrazo.desc}, previsto para ${fmtDate(ctx.proximoPrazo.data)}.`
-    );
-  } else if (ctx.ultimoAtendimento) {
-    partes.push(`Seu ultimo atendimento foi registrado em ${fmtDate(ctx.ultimoAtendimento.data)} e estamos usando isso para definir o proximo passo.`);
+    var dias = daysUntil(ctx.proximoPrazo.data);
+    if (dias !== null && dias <= 0) {
+      partes.push('Existe um prazo vencido que estamos tratando com prioridade: ' + (ctx.proximoPrazo.desc || '') + '.');
+    } else if (dias !== null && dias <= 7) {
+      partes.push('Temos um prazo importante nos proximos ' + dias + ' dias: ' + (ctx.proximoPrazo.desc || '') + '.');
+    } else if (dias !== null) {
+      partes.push('Retornar com atualizacao antes de ' + fmtDate(ctx.proximoPrazo.data) + '.');
+    }
   }
-  partes.push('Assim que houver atualizacao relevante, faremos contato.');
+  if (ctx.ultimoAtendimento) {
+    partes.push('Seu ultimo atendimento foi registrado em ' + fmtDate(ctx.ultimoAtendimento.data) + '.');
+  }
+  if (ctx.honorarios && ctx.honorarios.length > 0) {
+    var hon = ctx.honorarios.find(function(h){ return h.status !== 'Recebido'; });
+    if (hon) {
+      partes.push('Ha um lancamento financeiro pendente de R$ ' + (hon.valor || 0).toLocaleString('pt-BR') + '.');
+    }
+  }
+  partes.push('Estou a disposicao para qualquer duvida.');
   return partes.join(' ');
 }
 
@@ -12154,10 +12166,10 @@ function getProcessCenterContext(p) {
   if (proximoPrazo) {
     const d = daysUntil(proximoPrazo.data);
     nextStep = d < 0
-      ? `Tratar imediatamente o prazo vencido: ${proximoPrazo.desc}.`
+      ? 'Tratar imediatamente o prazo vencido: ' + (proximoPrazo.desc || '') + '.'
       : d === 0
-        ? `Hoje vence ${proximoPrazo.desc}; priorizar execucao.`
-        : `Preparar ${proximoPrazo.desc} para ${fmtDate(proximoPrazo.data)}.`;
+        ? 'Hoje vence ' + (proximoPrazo.desc || '') + '; priorizar execucao.'
+        : 'Preparar ' + (proximoPrazo.desc || '') + ' para ' + fmtDate(proximoPrazo.data) + '.';
   } else if (audPendente) {
     nextStep = 'Alinhar estrategia, prova e cliente para audiencia pendente.';
   } else if (perPendente) {
@@ -12169,487 +12181,12 @@ function getProcessCenterContext(p) {
   }
 
   const clienteMsg = [
-    `Olá, ${p.clienteNome || 'cliente'}.`,
-    `Seu processo ${p.numero || ''} segue ${p.status ? p.status.toLowerCase() : 'em andamento'}${p.fase ? `, na fase ${p.fase.toLowerCase()}` : ''}.`,
-    proximoPrazo ? `Nosso proximo marco e ${proximoPrazo.desc}, previsto para ${fmtDate(proximoPrazo.data)}.` : 'No momento, estamos monitorando o caso para definir o proximo movimento mais adequado.',
-    'Assim que houver atualizacao relevante, faremos contato.'
-  ].join(' ');
-
-  return { prazos, audiencias, pericias, honorarios, rpv, publicacoes, atendimentos, timeline, proximoPrazo, totalAberto, totalAtraso, nextStep, clienteMsg };
-}
-
-let dashboardMode = 'atender';
-
-function setDashboardMode(mode, el) {
-  dashboardMode = mode;
-  document.querySelectorAll('#dashboard-mode-switch .mode-pill').forEach(btn => btn.classList.remove('active'));
-  if (el) el.classList.add('active');
-  renderDashboard();
-}
-
-async function copiarMensagemRetornoCliente() {
-  const text = document.getElementById('cliente-retorno-texto')?.textContent?.trim();
-  if (!text) {
-    showToast('Nenhuma mensagem de retorno disponível.','warning');
-    return;
-  }
-  try {
-    await navigator.clipboard.writeText(text);
-    showToast('Mensagem copiada para envio.','success');
-  } catch(e) {
-    showToast('Não foi possível copiar automaticamente.','error');
-  }
-}
-
-
-// ═══════════════════════════════════════════════
-// PAGINAÇÃO DE CLIENTES
-// ═══════════════════════════════════════════════
-let clientesPagina = 1;
-const CLIENTES_POR_PAGINA = 50;
-let clientesBuscaAtual = '';
-
-function renderClientesPaginados() {
-  const tbody = document.getElementById('clientes-tbody');
-  const empty = document.getElementById('clientes-empty');
-  if (!tbody) return;
-
-  // Filtrar por busca
-  const q = clientesBuscaAtual.toLowerCase();
-  const todos = [...data.clientes].filter(c =>
-    !q ||
-    (c.nome||'').toLowerCase().includes(q) ||
-    (c.doc||'').includes(q) ||
-    (c.tel||'').includes(q)
-  );
-
-  const total = todos.length;
-  const totalPaginas = Math.ceil(total / CLIENTES_POR_PAGINA);
-  const inicio = (clientesPagina - 1) * CLIENTES_POR_PAGINA;
-  const fim = Math.min(inicio + CLIENTES_POR_PAGINA, total);
-  const pagina = todos.slice(inicio, fim);
-
-  tbody.innerHTML = '';
-  if (!total) { empty.style.display='block'; return; }
-  empty.style.display='none';
-
-  pagina.forEach(c => {
-    const numProcessos = data.processos.filter(p => p.clienteId == c.id).length;
-    tbody.innerHTML += `<tr>
-      <td><strong>${esc(c.nome)}</strong><br><span style="font-size:0.72rem;color:var(--muted)">${esc(c.tipo||'')}</span></td>
-      <td>${esc(c.doc)||'—'}</td>
-      <td>${esc(c.tel)||'—'}</td>
-      <td>${esc(c.email)||'—'}</td>
-      <td>${c.tipoCaso ? `<span class='tipo-caso-badge'>${esc(c.tipoCaso)}</span>` : '—'}</td>
-      <td><span class="badge badge-blue">${numProcessos}</span></td>
-      <td><div class="action-btns">
-        <button class="btn btn-outline btn-sm" onclick="verCliente(${c.id})">👁 Ver</button>
-        <button class="btn btn-gold btn-sm" onclick="editarCliente(${c.id})">✏️ Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="deletar('clientes',${c.id})">Excluir</button>
-      </div></td>
-    </tr>`;
-  });
-
-  // Render pagination controls
-  renderPaginacaoClientes(clientesPagina, totalPaginas, total, inicio+1, fim);
-}
-
-function renderPaginacaoClientes(pagAtual, totalPags, total, inicio, fim) {
-  let el = document.getElementById('clientes-paginacao');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'clientes-paginacao';
-    el.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--muted);flex-wrap:wrap;gap:10px';
-    document.querySelector('#clientes-tbody')?.closest('.card')?.appendChild(el);
-  }
-  if (totalPags <= 1) { el.style.display='none'; return; }
-  el.style.display='flex';
-
-  const maxBtns = 5;
-  let startPage = Math.max(1, pagAtual - 2);
-  let endPage   = Math.min(totalPags, startPage + maxBtns - 1);
-  if (endPage - startPage < maxBtns - 1) startPage = Math.max(1, endPage - maxBtns + 1);
-
-  let btns = '';
-  if (pagAtual > 1) btns += `<button class="btn btn-outline btn-sm" onclick="irParaPaginaClientes(${pagAtual-1})">‹</button>`;
-  for (let p = startPage; p <= endPage; p++) {
-    btns += `<button class="btn btn-sm ${p===pagAtual?'btn-gold':'btn-outline'}" onclick="irParaPaginaClientes(${p})">${p}</button>`;
-  }
-  if (pagAtual < totalPags) btns += `<button class="btn btn-outline btn-sm" onclick="irParaPaginaClientes(${pagAtual+1})">›</button>`;
-
-  el.innerHTML = `
-    <span>${inicio}–${fim} de ${total} clientes</span>
-    <div style="display:flex;gap:4px">${btns}</div>
-    <span>Página ${pagAtual} de ${totalPags}</span>
-  `;
-}
-
-function irParaPaginaClientes(pag) {
-  clientesPagina = pag;
-  renderClientesPaginados();
-  document.getElementById('page-clientes')?.scrollTo(0,0);
-}
-
-function buscarClientes(q) {
-  clientesBuscaAtual = q;
-  clientesPagina = 1;
-  renderClientesPaginados();
-}
-
-function renderClientes() {
-  const storyEl = document.getElementById('clientes-story-list');
-  const radarEl = document.getElementById('clientes-radar-list');
-  if (storyEl && radarEl) {
-    if (!data.clientes.length) {
-      storyEl.innerHTML = '<div class="empty-lite">Nenhum cliente ainda para acompanhar.</div>';
-      radarEl.innerHTML = '<div class="empty-lite">O relacionamento aparece aqui quando os clientes forem cadastrados.</div>';
-    } else {
-      const ranked = [...data.clientes]
-        .map(c => ({ c, ctx: getClienteContext(c) }))
-        .sort((a,b) => (b.ctx.processos.length + b.ctx.atendimentos.length) - (a.ctx.processos.length + a.ctx.atendimentos.length));
-
-      storyEl.innerHTML = ranked.slice(0, 4).map(({ c, ctx }) => `
-        <div class="story-card-line">
-          <div class="story-card-head">
-            <div>
-              <div class="story-card-title">${esc(c.nome)}</div>
-              <div class="story-card-sub">${esc(c.tipoCaso || 'Sem tipo de caso')} · ${esc(c.tel || 'Sem contato rapido')}</div>
-            </div>
-            <span class="story-tag teal">${ctx.processos.length} processo(s)</span>
-          </div>
-          <div class="story-signal">
-            <div class="story-signal-label">Ultimo contato</div>
-            <div class="story-signal-text">${esc(ctx.ultimoAtendimento ? `${fmtDate(ctx.ultimoAtendimento.data)} · ${(ctx.ultimoAtendimento.obs || '').split('\n')[0] || 'Atendimento registrado'}` : 'Sem atendimento registrado ainda.')}</div>
-          </div>
-          <div class="story-signal">
-            <div class="story-signal-label">Proximo passo sugerido</div>
-            <div class="story-signal-text">${esc(ctx.nextStep)}</div>
-          </div>
-          <div class="story-actions">
-            <button class="btn btn-outline btn-sm" onclick="verCliente(${c.id})">Abrir cliente</button>
-            <button class="btn btn-gold btn-sm" onclick="editarCliente(${c.id})">Editar</button>
-          </div>
-        </div>
-      `).join('');
-
-      radarEl.innerHTML = ranked.slice(0, 4).map(({ c, ctx }) => {
-        const honAberto = ctx.honorarios.filter(h => h.status !== 'Recebido').length;
-        return `
-          <div class="story-card-line">
-            <div class="story-card-title">${esc(c.nome)}</div>
-            <div class="story-tags">
-              ${c.tipoCaso ? `<span class="story-tag gold">${esc(c.tipoCaso)}</span>` : ''}
-              <span class="story-tag">${ctx.atendimentos.length} atendimento(s)</span>
-              ${honAberto ? `<span class="story-tag red">${honAberto} honorario(s) aberto(s)</span>` : ''}
-            </div>
-            <div class="story-signal">
-              <div class="story-signal-label">Contexto</div>
-              <div class="story-signal-text">${esc(c.obs ? c.obs.split('\n')[0] : (ctx.processos[0]?.assunto || 'Cliente sem observacao detalhada ainda.'))}</div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-  }
-  clientesPagina = 1;
-  renderClientesPaginados();
-}
-// === CONTRATOS ===
-function salvarContrato() {
-  const titulo = document.getElementById('ct-titulo').value.trim();
-  if (!titulo) { showToast('Informe o título.','error'); return; return; }
-  const editId = document.getElementById('ct-edit-id').value;
-  const ctClienteInput = document.getElementById('ct-cliente').value.trim();
-  const ctClienteMatch = data.clientes.find(c => c.nome.toLowerCase() === ctClienteInput.toLowerCase());
-  const dados = {
-    titulo,
-    clienteId: ctClienteMatch ? ctClienteMatch.id : '',
-    clienteNome: ctClienteInput || '—',
-    tipo: document.getElementById('ct-tipo').value,
-    valor: parseFloat(document.getElementById('ct-valor').value)||0,
-    assinatura: document.getElementById('ct-assinatura').value,
-    validade: document.getElementById('ct-validade').value,
-    status: document.getElementById('ct-status').value
-  };
-  if (editId) {
-    const idx = data.contratos.findIndex(x => x.id == editId);
-    if (idx !== -1) data.contratos[idx] = { ...data.contratos[idx], ...dados };
-  } else { data.contratos.push({ id: Date.now(), ...dados }); }
-  saveData(); closeModal('modal-contrato'); renderAll(); showToast('Contrato salvo com sucesso!','success');
-  document.getElementById('ct-edit-id').value = '';
-  ['ct-titulo','ct-valor','ct-assinatura','ct-validade'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('ct-modal-title').textContent = 'Novo Contrato';
-  document.getElementById('ct-save-btn').textContent = 'Salvar Contrato';
-}
-
-function renderContratos() {
-  const tbody = document.getElementById('contratos-tbody');
-  const empty = document.getElementById('contratos-empty');
-  tbody.innerHTML = '';
-  if (data.contratos.length === 0) { empty.style.display='block'; return; }
-  empty.style.display='none';
-  data.contratos.forEach(c => {
-    tbody.innerHTML += `<tr>
-      <td><strong>${c.titulo}</strong></td>
-      <td>${c.clienteNome}</td>
-      <td>${c.tipo}</td>
-      <td>R$ ${c.valor.toFixed(2)}</td>
-      <td>${fmtDate(c.assinatura)}</td>
-      <td>${fmtDate(c.validade)}</td>
-      <td>${statusBadge(c.status)}</td>
-      <td><div class="action-btns">
-        <button class="btn btn-outline btn-sm" onclick="verContrato(${c.id})">👁 Ver</button>
-        <button class="btn btn-gold btn-sm" onclick="editarContrato(${c.id})">✏️ Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="deletar('contratos',${c.id})">Excluir</button>
-      </div></td>
-    </tr>`;
-  });
-}
-
-// === PRAZOS ===
-function salvarPrazo() {
-  const desc = document.getElementById('pr-desc').value.trim();
-  if (!desc) { showToast('Informe a descrição.','error'); return; return; }
-  const editId = document.getElementById('pr-edit-id').value;
-  const dados = {
-    desc,
-    processo: document.getElementById('pr-processo').value,
-    tipo: document.getElementById('pr-tipo').value,
-    data: document.getElementById('pr-data').value,
-    urgencia: document.getElementById('pr-urgencia').value
-  };
-  if (editId) {
-    const idx = data.prazos.findIndex(x => x.id == editId);
-    if (idx !== -1) data.prazos[idx] = { ...data.prazos[idx], ...dados };
-  } else { data.prazos.push({ id: Date.now(), ...dados }); }
-  saveData(); syncToSupabase('prazos', dados).then(()=>mostrarSyncStatus(true)).catch(()=>mostrarSyncStatus(false)); closeModal('modal-prazo'); renderAll(); showToast('Prazo salvo com sucesso!','success');
-  document.getElementById('pr-edit-id').value = '';
-  ['pr-desc','pr-processo','pr-data'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('pr-modal-title').textContent = 'Novo Prazo';
-  document.getElementById('pr-save-btn').textContent = 'Salvar Prazo';
-}
-
-function renderPrazos() {
-  const tbody = document.getElementById('prazos-tbody');
-  const empty = document.getElementById('prazos-empty');
-  tbody.innerHTML = '';
-  const sorted = [...data.prazos].sort((a,b) => (a.data||'').localeCompare(b.data||''));
-  if (sorted.length === 0) { empty.style.display='block'; return; }
-  empty.style.display='none';
-  sorted.forEach(p => {
-    const d = daysUntil(p.data);
-    let alert = '';
-    if (d < 0) alert = '<span style="color:var(--danger)">⚠ Vencido</span>';
-    else if (d <= 3) alert = '<span style="color:var(--danger)">⚠ Urgente</span>';
-    else if (d <= 7) alert = '<span style="color:#d97706">⚡ Próximo</span>';
-    tbody.innerHTML += `<tr>
-      <td><strong>${esc(p.desc)}</strong> ${alert}</td>
-      <td>${p.processo||'—'}</td>
-      <td>${p.tipo}</td>
-      <td>${fmtDate(p.data)}</td>
-      <td>${statusBadge(p.urgencia)}</td>
-      <td><div class="action-btns">
-        <button class="btn btn-outline btn-sm" onclick="verPrazo(${p.id})">👁 Ver</button>
-        <button class="btn btn-gold btn-sm" onclick="editarPrazo(${p.id})">✏️ Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="deletar('prazos',${p.id})">Excluir</button>
-      </div></td>
-    </tr>`;
-  });
-}
-
-// === HONORÁRIOS ===
-
-
-// ═══════════════════════════════════════════════
-// PARCEIRO NOS FORMULÁRIOS (GENÉRICO)
-// ═══════════════════════════════════════════════
-function calcParceiroPct(prefix) {
-  const nome = document.getElementById(prefix+'-parceiro')?.value?.trim() || '';
-  const pct  = parseFloat(document.getElementById(prefix+'-parceiro-pct')?.value) || 0;
-  const hint = document.getElementById(prefix+'-parceiro-hint');
-  if (!hint) return;
-
-  // Auto-preencher % se parceiro cadastrado
-  if (nome && !pct) {
-    const p = (data.parceiros||[]).find(x => x.nome.toLowerCase() === nome.toLowerCase());
-    if (p && p.comissao) {
-      document.getElementById(prefix+'-parceiro-pct').value = p.comissao;
-      calcParceiroPct(prefix);
-      return;
-    }
-  }
-
-  if (nome && pct) {
-    hint.style.display = 'block';
-    hint.innerHTML = `🤝 <strong>${esc(nome)}</strong> receberá <strong>${pct}%</strong> dos honorários deste registro.`;
-  } else {
-    hint.style.display = 'none';
-  }
-}
-
-function getParceiroDados(prefix) {
-  const nome = document.getElementById(prefix+'-parceiro')?.value?.trim() || '';
-  const pct  = parseFloat(document.getElementById(prefix+'-parceiro-pct')?.value) || 0;
-  return { parceiro: nome, parceiroPct: pct };
-}
-
-function limparParceiro(prefix) {
-  const elN = document.getElementById(prefix+'-parceiro');
-  const elP = document.getElementById(prefix+'-parceiro-pct');
-  const elH = document.getElementById(prefix+'-parceiro-hint');
-  if(elN) elN.value = '';
-  if(elP) elP.value = '';
-  if(elH) elH.style.display = 'none';
-}
-
-function preencherParceiro(prefix, nome, pct) {
-  const elN = document.getElementById(prefix+'-parceiro');
-  const elP = document.getElementById(prefix+'-parceiro-pct');
-  if(elN) elN.value = nome || '';
-  if(elP) elP.value = pct || '';
-  if(nome && pct) calcParceiroPct(prefix);
-}
-
-// ═══════════════════════════════════════════════
-// PARCERIA NOS HONORÁRIOS
-// ═══════════════════════════════════════════════
-function toggleParceriaHon() {
-  const check = document.getElementById('h-tem-parceiro');
-  const panel = document.getElementById('h-parceria-panel');
-  if (!panel) return;
-  panel.style.display = check.checked ? 'block' : 'none';
-  if (check.checked) {
-    // Fill datalist with registered partners
-    const list = document.getElementById('h-parceiro-list');
-    if (list) list.innerHTML = (data.parceiros||[]).map(p => `<option value="${esc(p.nome)}">`).join('');
-  }
-}
-
-function calcParceriaHon() {
-  const valor = parseFloat(document.getElementById('h-valor')?.value)||0;
-  const perc  = parseFloat(document.getElementById('h-parceiro-perc')?.value)||0;
-  const fmt   = v => 'R$ ' + v.toLocaleString('pt-BR',{minimumFractionDigits:2});
-  const parcVal = valor * perc / 100;
-  const seuVal  = valor - parcVal;
-  const elTotal = document.getElementById('h-parc-total');
-  const elParc  = document.getElementById('h-parc-val');
-  const elSeu   = document.getElementById('h-parc-seu');
-  if(elTotal) elTotal.textContent = fmt(valor);
-  if(elParc)  elParc.textContent  = fmt(parcVal);
-  if(elSeu)   elSeu.textContent   = fmt(seuVal);
-}
-
-function salvarHonorario() {
-  const desc = document.getElementById('h-desc').value.trim();
-  if (!desc) { showToast('Informe a descrição.','error'); return; return; }
-  const editId = document.getElementById('h-edit-id').value;
-  const hClienteInput = document.getElementById('h-cliente').value.trim();
-  const hClienteMatch = data.clientes.find(c => c.nome.toLowerCase() === hClienteInput.toLowerCase());
-  const hTemParceiro = document.getElementById('h-tem-parceiro')?.checked;
-  const hParcNome = document.getElementById('h-parceiro-nome')?.value.trim() || '';
-  const hParcPerc = parseFloat(document.getElementById('h-parceiro-perc')?.value)||0;
-  const dados = {
-    desc,
-    clienteId: hClienteMatch ? hClienteMatch.id : '',
-    clienteNome: hClienteInput || '—',
-    processo: document.getElementById('h-processo').value,
-    valor: parseFloat(document.getElementById('h-valor').value)||0,
-    venc: document.getElementById('h-venc').value,
-    status: document.getElementById('h-status').value,
-    parceiro: hTemParceiro ? hParcNome : '',
-    parceiroPct: hTemParceiro ? hParcPerc : 0
-  };
-  if (editId) {
-    const idx = data.honorarios.findIndex(x => x.id == editId);
-    if (idx !== -1) data.honorarios[idx] = { ...data.honorarios[idx], ...dados };
-  } else {
-    data.honorarios.push({ id: Date.now(), ...dados });
-  }
-  saveData(); syncToSupabase('honorarios', dados).then(()=>mostrarSyncStatus(true)).catch(()=>mostrarSyncStatus(false)); closeModal('modal-honorario'); renderAll(); showToast('Lançamento salvo com sucesso!','success');
-  document.getElementById('h-edit-id').value = '';
-  ['h-desc','h-processo','h-valor','h-venc','h-cliente'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('h-modal-title').textContent = 'Novo Lançamento';
-  document.getElementById('h-save-btn').textContent = 'Salvar';
-}
-
-
-// ═══════════════════════════════════════════════
-// HONORÁRIOS POR CLIENTE
-// ═══════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════
-// ATUALIZAR CARDS DO TOPO DA ABA HONORÁRIOS
-// ═══════════════════════════════════════════════
-function atualizarCardsTopo() {
-  const fmt = v => 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2});
-
-  let recebido = 0, areceber = 0, atraso = 0;
-  let totalHonContrato = 0, totalHonRpv = 0, totalParceiros = 0;
-
-  // Todos os honorários manuais
-  (data.honorarios||[]).forEach(h => {
-    const base = h.valorTotal || h.valor || 0;
-    const parcVal = base * (h.parceiroPct||0) / 100;
-    const seuVal  = base - parcVal;
-    totalParceiros   += parcVal;
-    totalHonContrato += seuVal;
-
-    // Para recebido/a receber usar valor do lançamento
-    const vLanc = h.valor || 0;
-    const pLanc = vLanc * (h.parceiroPct||0) / 100;
-    const sLanc = vLanc - pLanc;
-    if (h.status === 'Recebido')  recebido  += sLanc;
-    else if (h.status === 'Em atraso') atraso += sLanc;
-    else areceber += sLanc;
-  });
-
-  // RPVs
-  (data.rpvs||[]).forEach(r => {
-    const honTotal = (r.honLiquido||0) + (r.honAdm||0);
-    const parcVal  = honTotal * (r.parceiroPct||0) / 100;
-    const seuVal   = honTotal - parcVal;
-    totalHonRpv  += seuVal;
-    totalParceiros += parcVal;
-
-    if (r.status === 'Pago') recebido += seuVal;
-    else areceber += seuVal;
-  });
-
-  const liquidoReal  = totalHonContrato + totalHonRpv;
-  const totalGeral   = recebido + areceber;
-
-  const el = id => document.getElementById(id);
-  if(el('fin-recebido'))    el('fin-recebido').textContent    = fmt(recebido);
-  if(el('fin-areceber'))    el('fin-areceber').textContent    = fmt(areceber);
-  if(el('fin-atraso'))      el('fin-atraso').textContent      = fmt(atraso);
-  if(el('fin-liquido'))     el('fin-liquido').textContent     = fmt(totalGeral);
-  if(el('fin-hon-manual'))  el('fin-hon-manual').textContent  = fmt(totalHonContrato);
-  if(el('fin-hon-rpv'))     el('fin-hon-rpv').textContent     = fmt(totalHonRpv);
-  if(el('fin-parceiros'))   el('fin-parceiros').textContent   = fmt(totalParceiros);
-  if(el('fin-liquido-real'))el('fin-liquido-real').textContent= fmt(liquidoReal);
-}
-
-function renderHonorariosPorCliente() {
-  const div = document.getElementById('hon-cards-clientes');
-  const empty = document.getElementById('honorarios-empty');
-  if (!div) return;
-  const fmt = v => 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2});
-
-  // Atualizar cards de resumo do topo
-  atualizarCardsTopo();
-
-  // ── Construir mapa de clientes ────────────────────────────
-  const grupos = {};
-
-  const getGrupo = (nome, processo) => {
-    const key = (nome||'—') + '|' + (processo||'');
-    if (!grupos[key]) grupos[key] = {
-      nome: nome||'—', processo: processo||'',
-      contrato: 0, contratoTotal: 0, parcContratoPct: 0, parcContratoNome: '',
-      rpvHon: 0, rpvBruto: 0, parcRpvPct: 0, parcRpvNome: '', parcRpvVal: 0,
-      lancamentos: [], rpvs: []
-    };
-    return grupos[key];
+    'Ola, ' + (p.clienteNome || 'cliente') + '.',
+    'Seu processo ' + (p.numero || '') + ' segue ' + (p.status ? p.status.toLowerCase() : 'em andamento') + (p.fase ? ', na fase ' + p.fase.toLowerCase() : '') + '.',
+    proximoPrazo ? 'Nosso proximo marco e ' + (proximoPrazo.desc||'') + ', previsto para ' + fmtDate(proximoPrazo.data) + '.' : null,
+    ultimoMov ? 'Ultima movimentacao: ' + (ultimoMov.nome||ultimoMov) + '.' : null,
+    'Qualquer duvida estou a disposicao.',
+  ].filter(Boolean)
   };
 
   // Honorários salvos
@@ -13754,7 +13291,7 @@ function exportarExcel() {
 
   // Contratos
   const ctHeaders = ['Título','Cliente','Tipo','Valor','Assinatura','Validade','Status'];
-  const ctRows = data.contratos.map(c => [c.titulo, c.clienteNome, c.tipo, `R$ ${c.valor.toFixed(2)}`, fmtDate(c.assinatura), fmtDate(c.validade), c.status]);
+  const ctRows = data.contratos.map(c => [c.titulo, c.clienteNome, c.tipo, 'R$ ' + (c.valor.toFixed(2)), fmtDate(c.assinatura), fmtDate(c.validade), c.status]);
 
   // Prazos
   const prHeaders = ['Descrição','Processo','Tipo','Vencimento','Urgência'];
@@ -13766,7 +13303,7 @@ function exportarExcel() {
 
   // Honorários
   const hHeaders = ['Descrição','Cliente','Processo','Valor','Vencimento','Status'];
-  const hRows = data.honorarios.map(h => [h.desc, h.clienteNome, h.processo||'', `R$ ${h.valor.toFixed(2)}`, fmtDate(h.venc), h.status]);
+  const hRows = data.honorarios.map(h => [h.desc, h.clienteNome, h.processo||'', 'R$ ' + (h.valor.toFixed(2)), fmtDate(h.venc), h.status]);
 
   // Build HTML table workbook (opens in Excel)
   const tables = [
