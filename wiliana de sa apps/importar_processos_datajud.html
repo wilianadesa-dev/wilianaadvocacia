@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Importar Processos do Datajud — Wiliana de Sá</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #060f1a;
+  color: #fff;
+  min-height: 100vh;
+  padding: 24px;
+}
+.card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+h1 { font-size: 1.4rem; margin-bottom: 6px; }
+.sub { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-bottom: 28px; }
+.form-group { margin-bottom: 16px; }
+label { display:block; font-size:0.72rem; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; font-weight:600; }
+input, select {
+  width: 100%;
+  padding: 11px 14px;
+  background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+}
+input:focus, select:focus { border-color: #1f6b63; }
+select option { background: #0b1929; }
+.btn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #1f6b63, #2d9186);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s;
+}
+.btn:hover { opacity: 0.9; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-gold {
+  background: linear-gradient(135deg, #c9a84c, #d4a94a);
+  color: #0b1929;
+  margin-top: 12px;
+}
+.progress-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 20px;
+  display: none;
+}
+.progress-label { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+.progress-bar-wrap { background: rgba(255,255,255,0.08); border-radius: 100px; height: 8px; overflow:hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, #1f6b63, #2d9186); border-radius: 100px; width: 0%; transition: width 0.3s; }
+.log {
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+  font-size: 0.74rem;
+  font-family: monospace;
+  color: rgba(255,255,255,0.5);
+  max-height: 200px;
+  overflow-y: auto;
+  line-height: 1.8;
+}
+.log .ok    { color: #4ade80; }
+.log .erro  { color: #f87171; }
+.log .info  { color: #60a5fa; }
+.log .warn  { color: #fbbf24; }
+.result-card {
+  background: rgba(31,107,99,0.15);
+  border: 1px solid rgba(31,107,99,0.3);
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 16px;
+  display: none;
+  text-align: center;
+}
+.result-card h2 { color: #4ade80; font-size: 1.2rem; margin-bottom: 8px; }
+.result-card p  { font-size: 0.84rem; color: rgba(255,255,255,0.6); }
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+.stat { background:rgba(255,255,255,0.05); border-radius:8px; padding:12px; text-align:center; }
+.stat-num { font-size:1.8rem; font-weight:700; color:#c9a84c; }
+.stat-lbl { font-size:0.72rem; color:rgba(255,255,255,0.4); margin-top:2px; }
+.processo-list { margin-top:16px; max-height:300px; overflow-y:auto; }
+.proc-item {
+  display:flex; gap:10px; align-items:flex-start;
+  padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-size:0.8rem;
+}
+.proc-num { color:#60a5fa; font-weight:600; min-width:180px; }
+.proc-info { flex:1; color:rgba(255,255,255,0.6); line-height:1.4; }
+.proc-status { font-size:0.68rem; padding:2px 8px; border-radius:20px; background:rgba(255,255,255,0.08); flex-shrink:0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>⚖️ Importar Processos do Datajud</h1>
+  <p class="sub">Busca automaticamente todos os seus processos no CNJ e importa para o sistema</p>
+
+  <div class="form-group">
+    <label>Número da OAB</label>
+    <input id="oab-num" type="text" value="21030" placeholder="Ex: 21030">
+  </div>
+
+  <div class="form-group">
+    <label>Estado da OAB</label>
+    <select id="oab-uf">
+      <option value="MA" selected>Maranhão (MA)</option>
+      <option value="PI">Piauí (PI)</option>
+      <option value="DF">Distrito Federal (DF)</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Tribunal</label>
+    <select id="tribunal">
+      <option value="trf1" selected>TRF1 — Tribunal Regional Federal da 1ª Região</option>
+      <option value="tjma">TJMA — Tribunal de Justiça do Maranhão</option>
+      <option value="tjpi">TJPI — Tribunal de Justiça do Piauí</option>
+    </select>
+  </div>
+
+  <button class="btn" id="btn-buscar" onclick="buscarProcessos()">🔍 Buscar Processos no Datajud</button>
+
+  <!-- Progress -->
+  <div class="progress-card" id="progress-card">
+    <div class="progress-label" id="progress-label">Buscando...</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <!-- Resultado -->
+  <div class="result-card" id="result-card">
+    <h2 id="result-titulo">✅ Processos encontrados!</h2>
+    <p id="result-sub"></p>
+    <div class="stats">
+      <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Encontrados</div></div>
+      <div class="stat"><div class="stat-num" id="stat-importar">0</div><div class="stat-lbl">Prontos para importar</div></div>
+      <div class="stat"><div class="stat-num" id="stat-pages">0</div><div class="stat-lbl">Páginas</div></div>
+    </div>
+    <div class="processo-list" id="processo-list"></div>
+    <button class="btn btn-gold" id="btn-importar" onclick="importarNoSistema()">💾 Importar todos no sistema</button>
+  </div>
+</div>
+
+<script>
+// ── Config Datajud ────────────────────────────────
+const DATAJUD_KEY = 'APIKey cDZHYzlZa0JadVREZDJCendQbXY6SkJlTzNjLV9TaEE1NDc1VjZEZGNFdw==';
+const ENDPOINTS = {
+  trf1: 'https://api-publica.datajud.cnj.jus.br/api_publica_trf1/_search',
+  tjma: 'https://api-publica.datajud.cnj.jus.br/api_publica_tjma/_search',
+  tjpi: 'https://api-publica.datajud.cnj.jus.br/api_publica_tjpi/_search',
+};
+
+const STORAGE_KEY = 'wiliana-juridico-v1';
+let processosEncontrados = [];
+
+function log(msg, tipo='info') {
+  const el = document.getElementById('log');
+  const div = document.createElement('div');
+  div.className = tipo;
+  div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+
+function setProgress(pct, label) {
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = label;
+}
+
+async function buscarProcessos() {
+  const oabNum = document.getElementById('oab-num').value.trim();
+  const oabUf  = document.getElementById('oab-uf').value;
+  const trib   = document.getElementById('tribunal').value;
+  const endpoint = ENDPOINTS[trib];
+
+  if (!oabNum) { alert('Informe o número da OAB!'); return; }
+
+  const btn = document.getElementById('btn-buscar');
+  btn.disabled = true;
+  btn.textContent = '⏳ Buscando...';
+
+  document.getElementById('progress-card').style.display = 'block';
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('log').innerHTML = '';
+  processosEncontrados = [];
+
+  log(`Buscando processos OAB ${oabUf} ${oabNum} no ${trib.toUpperCase()}...`, 'info');
+  setProgress(5, 'Conectando ao Datajud...');
+
+  try {
+    let from = 0;
+    const size = 100;
+    let total = 0;
+    let pagina = 1;
+
+    while (true) {
+      const query = {
+        query: {
+          bool: {
+            should: [
+              { match: { "advogados.OabNumero": oabNum } },
+              { match: { "advogados.oabNumero": oabNum } }
+            ],
+            minimum_should_match: 1
+          }
+        },
+        size: size,
+        from: from,
+        sort: [{ "dataAjuizamento": { "order": "desc" } }]
+      };
+
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': DATAJUD_KEY
+        },
+        body: JSON.stringify(query)
+      });
+
+      if (!resp.ok) {
+        log(`Erro HTTP ${resp.status}: ${resp.statusText}`, 'erro');
+        break;
+      }
+
+      const data = await resp.json();
+      const hits = data?.hits?.hits || [];
+      total = data?.hits?.total?.value || 0;
+
+      if (pagina === 1) {
+        log(`Total encontrado: ${total} processos`, 'ok');
+        document.getElementById('stat-total').textContent = total;
+        document.getElementById('stat-pages').textContent = Math.ceil(total/size);
+      }
+
+      hits.forEach(h => {
+        const s = h._source;
+        processosEncontrados.push({
+          numero:      s.numeroProcesso || s.numero || '',
+          cliente:     extrairPolo(s, 'ativo'),
+          assunto:     (s.assuntos?.[0]?.nome) || (s.classe?.nome) || '',
+          fase:        s.movimentos?.[0]?.nome || 'Em andamento',
+          status:      'Em andamento',
+          tribunal:    trib.toUpperCase(),
+          area:        'Previdenciário',
+          dataAjuiz:   s.dataAjuizamento?.split('T')[0] || '',
+          orgaoJulg:   s.orgaoJulgador?.nome || '',
+          ultimoMov:   s.movimentos?.[0]?.nome || '',
+        });
+      });
+
+      const pct = Math.min(95, Math.round((from + hits.length) / Math.max(total,1) * 100));
+      setProgress(pct, `Página ${pagina} — ${processosEncontrados.length} de ${total} processos...`);
+      log(`Pagina ${pagina}: +${hits.length} processos`, 'info');
+
+      from += size;
+      if (from >= total || hits.length === 0) break;
+      pagina++;
+
+      // Pausa para não sobrecarregar
+      await new Promise(r => setTimeout(r, 300));
+    }
+
+    setProgress(100, `${processosEncontrados.length} processos encontrados!`);
+    log(`Busca concluida! ${processosEncontrados.length} processos prontos para importar.`, 'ok');
+
+    mostrarResultados(total);
+
+  } catch(e) {
+    log(`Erro: ${e.message}`, 'erro');
+    log('Verifique sua conexao com a internet.', 'warn');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔍 Buscar Processos no Datajud';
+  }
+}
+
+function extrairPolo(s, polo) {
+  const partes = s.partes || [];
+  const ativo = partes.find(p =>
+    (p.tipoParte||'').toLowerCase().includes('ativo') ||
+    (p.polo||'').toLowerCase() === 'at'
+  );
+  if (ativo) return ativo.nome || ativo.nomeParticipante || '';
+  return '';
+}
+
+function mostrarResultados(total) {
+  const resultCard = document.getElementById('result-card');
+  resultCard.style.display = 'block';
+  document.getElementById('stat-importar').textContent = processosEncontrados.length;
+
+  const list = document.getElementById('processo-list');
+  list.innerHTML = processosEncontrados.slice(0, 50).map(p => `
+    <div class="proc-item">
+      <div class="proc-num">${p.numero}</div>
+      <div class="proc-info">
+        ${p.cliente ? `<strong>${p.cliente}</strong><br>` : ''}
+        ${p.assunto} ${p.orgaoJulg ? '· ' + p.orgaoJulg : ''}
+      </div>
+      <div class="proc-status">${p.status}</div>
+    </div>
+  `).join('') + (processosEncontrados.length > 50 ? `<div style="text-align:center;padding:12px;color:rgba(255,255,255,0.3);font-size:0.78rem">+ ${processosEncontrados.length - 50} processos a mais</div>` : '');
+
+  document.getElementById('result-sub').textContent =
+    `${processosEncontrados.length} processos encontrados. Clique em "Importar" para salvar no sistema.`;
+}
+
+function importarNoSistema() {
+  if (!processosEncontrados.length) return;
+
+  // Carregar dados existentes do localStorage
+  const raw = localStorage.getItem(STORAGE_KEY);
+  let dados = {};
+  try { dados = JSON.parse(raw) || {}; } catch(e) {}
+  if (!dados.processos) dados.processos = [];
+
+  const existentes = new Set(dados.processos.map(p => p.numero));
+  let adicionados = 0;
+
+  processosEncontrados.forEach(p => {
+    if (!p.numero || existentes.has(p.numero)) return;
+    dados.processos.push({
+      id: Date.now() + Math.random(),
+      numero: p.numero,
+      clienteNome: p.cliente || '—',
+      area: p.area || 'Previdenciário',
+      assunto: p.assunto || '',
+      fase: p.fase || 'Inicial',
+      status: 'Em andamento',
+      tribunal: p.tribunal || '',
+      orgaoJulg: p.orgaoJulg || '',
+      ultimoMov: p.ultimoMov || '',
+      dataAjuiz: p.dataAjuiz || '',
+      obs: `Importado do Datajud em ${new Date().toLocaleDateString('pt-BR')}`,
+    });
+    existentes.add(p.numero);
+    adicionados++;
+  });
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+
+  document.getElementById('result-titulo').textContent = '✅ Importação concluída!';
+  document.getElementById('result-sub').textContent =
+    `${adicionados} processos importados para o sistema. Abra o sistema e vá na aba Processos!`;
+  document.getElementById('btn-importar').disabled = true;
+  document.getElementById('btn-importar').textContent = '✅ Importado!';
+
+  log(`${adicionados} processos salvos no sistema!`, 'ok');
+}
+</script>
+</body>
+</html>
