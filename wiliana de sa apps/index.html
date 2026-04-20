@@ -5301,8 +5301,8 @@ function extrairPJe() {
     <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05)">
       <div style="flex:1;min-width:0">
         <div style="font-family:monospace;color:#60a5fa;font-size:0.75rem">${esc(p.numero)}</div>
-        ${p.clienteNome ? `<div style="font-size:0.73rem;color:rgba(255,255,255,0.6);margin-top:2px">${esc(p.clienteNome)}</div>` : ''}
-        ${p.orgao ? `<div style="font-size:0.68rem;color:rgba(255,255,255,0.35)">${esc(p.orgao)}</div>` : ''}
+        ${p.clienteNome ? '<div style="font-size:0.73rem;color:rgba(255,255,255,0.6);margin-top:2px">${esc(p.clienteNome)}</div>' : ''}
+        ${p.orgao ? '<div style="font-size:0.68rem;color:rgba(255,255,255,0.35)">${esc(p.orgao)}</div>' : ''}
       </div>
       <span style="font-size:0.65rem;padding:2px 8px;border-radius:20px;flex-shrink:0;${p.novo
         ? 'background:rgba(74,222,128,0.12);color:#4ade80'
@@ -5492,7 +5492,7 @@ function buscarClienteRapido(q) {
       onmouseover="this.style.background='rgba(31,107,99,0.15)'"
       onmouseout="this.style.background='transparent'">
       <strong>${esc(c.nome)}</strong>
-      ${c.tel ? `<span style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-left:8px">${esc(c.tel)}</span>` : ''}
+      ${c.tel ? '<span style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-left:8px">${esc(c.tel)}</span>' : ''}
     </div>
   `).join('');
 }
@@ -10059,7 +10059,7 @@ function renderRpv() {
       <td>${fmtDate(r.dataPrevisao)}</td>
       <td><span class="badge ${sClass[r.status]||'badge-yellow'}">${r.status}</span></td>
       <td>
-        ${r.parceiro ? `<div style="font-size:0.72rem;color:var(--gold-dark)">🤝 ${esc(r.parceiro)} (${r.parceiroPct}%)</div>` : ''}
+        ${r.parceiro ? '<div style="font-size:0.72rem;color:var(--gold-dark)">🤝 ${esc(r.parceiro)} (${r.parceiroPct}%)</div>' : ''}
         <div class="action-btns">
           <button class="btn btn-gold btn-sm" onclick="editarRpv(${r.id})">✏️</button>
           <button class="btn btn-danger btn-sm" onclick="deletar('rpvs',${r.id})">Excluir</button>
@@ -10247,7 +10247,7 @@ function renderModelos() {
         <span style="color:var(--muted);font-size:0.8rem">▼</span>
       </div>
       <div id="modelo-body-${m.id}" class="modelo-body">
-        ${m.obs?`<div style="font-size:0.76rem;color:var(--teal);margin-bottom:8px;padding:6px 10px;background:rgba(42,122,114,0.06);border-radius:4px">💡 ${m.obs}</div>`:''}
+        ${m.obs? '<div style="font-size:0.76rem;color:var(--teal);margin-bottom:8px;padding:6px 10px;background:rgba(42,122,114,0.06);border-radius:4px">💡 ${m.obs}</div>' : ''}
         <div class="modelo-texto">${m.texto||''}</div>
         <div class="modelo-actions">
           <button class="btn btn-gold btn-sm" onclick="copiarModelo(${m.id})">📋 Copiar Texto</button>
@@ -10399,7 +10399,7 @@ function renderCustas() {
   const sClass = { 'Reembolsada':'badge-green', 'Não reembolsada':'badge-yellow', 'A cobrar do cliente':'badge-blue' };
   items.forEach(c => {
     tbody.innerHTML += `<tr>
-      <td><strong>${c.desc}</strong>${c.obs?`<br><span style="font-size:0.72rem;color:var(--muted)">${c.obs}</span>`:''}
+      <td><strong>${c.desc}</strong>${c.obs? '<br><span style="font-size:0.72rem;color:var(--muted)">${c.obs}</span>' : ''}
       </td>
       <td><span class="badge badge-gray">${c.tipo}</span></td>
       <td>${c.processo||'—'}</td>
@@ -10487,12 +10487,12 @@ function renderParceiros() {
       <div class="parceiro-info">
         <div class="parceiro-nome">${esc(p.nome)} <span class="badge badge-gray" style="font-size:0.65rem">${p.tipo}</span></div>
         <div class="parceiro-meta">
-          ${p.tel ? `<span>📞 ${p.tel}</span>` : ''}
-          ${p.email ? `<span>✉️ ${p.email}</span>` : ''}
-          ${p.cidade ? `<span>📍 ${p.cidade}</span>` : ''}
-          ${p.pix ? `<span>💳 ${p.pix}</span>` : ''}
+          ${p.tel ? '<span>📞 ${p.tel}</span>' : ''}
+          ${p.email ? '<span>✉️ ${p.email}</span>' : ''}
+          ${p.cidade ? '<span>📍 ${p.cidade}</span>' : ''}
+          ${p.pix ? '<span>💳 ${p.pix}</span>' : ''}
         </div>
-        ${p.obs ? `<div style="font-size:0.78rem;color:var(--muted)">${p.obs}</div>` : ''}
+        ${p.obs ? '<div style="font-size:0.78rem;color:var(--muted)">${p.obs}</div>' : ''}
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div class="parceiro-comissao">${p.comissao ? p.comissao + '%' : '—'}</div>
@@ -10660,20 +10660,20 @@ function renderPrevisao() {
           <span class="badge ${sClass}" style="font-size:0.66rem">${p.status}</span>
         </div>
         <div class="prev-meta">
-          ${p.processo ? `<span>📁 ${p.processo}</span>` : ''}
-          ${p.dataPrevisao ? `<span>📅 Previsão: ${fmtDate(p.dataPrevisao)}</span>` : ''}
-          ${p.dataExpedicao ? `<span>📤 Expedição: ${fmtDate(p.dataExpedicao)}</span>` : ''}
-          ${p.dataRecebimento ? `<span>✅ Recebido: ${fmtDate(p.dataRecebimento)}</span>` : ''}
-          ${p.banco ? `<span>🏦 ${p.banco}</span>` : ''}
+          ${p.processo ? '<span>📁 ${p.processo}</span>' : ''}
+          ${p.dataPrevisao ? '<span>📅 Previsão: ${fmtDate(p.dataPrevisao)}</span>' : ''}
+          ${p.dataExpedicao ? '<span>📤 Expedição: ${fmtDate(p.dataExpedicao)}</span>' : ''}
+          ${p.dataRecebimento ? '<span>✅ Recebido: ${fmtDate(p.dataRecebimento)}</span>' : ''}
+          ${p.banco ? '<span>🏦 ${p.banco}</span>' : ''}
         </div>
-        ${p.obs ? `<div style="font-size:0.76rem;color:var(--muted);margin-top:4px">${p.obs}</div>` : ''}
+        ${p.obs ? '<div style="font-size:0.76rem;color:var(--muted);margin-top:4px">${p.obs}</div>' : ''}
       </div>
       <div class="prev-valores">
-        ${p.valorTotal ? `<div class="prev-valor-bruto">Causa: ${fmt(p.valorTotal)}</div>` : ''}
-        ${p.honBruto ? `<div class="prev-valor-bruto">Bruto: ${fmt(p.honBruto)}</div>` : ''}
+        ${p.valorTotal ? '<div class="prev-valor-bruto">Causa: ${fmt(p.valorTotal)}</div>' : ''}
+        ${p.honBruto ? '<div class="prev-valor-bruto">Bruto: ${fmt(p.honBruto)}</div>' : ''}
         <div class="prev-valor-hon">${fmt(totalHon)}</div>
-        ${p.ir ? `<div class="prev-valor-liq">IR ${p.ir}% desc.</div>` : ''}
-        ${p.honAdm ? `<div class="prev-valor-liq">+ R$ ${p.honAdm.toFixed(2)} adm.</div>` : ''}
+        ${p.ir ? '<div class="prev-valor-liq">IR ${p.ir}% desc.</div>' : ''}
+        ${p.honAdm ? '<div class="prev-valor-liq">+ R$ ${p.honAdm.toFixed(2)} adm.</div>' : ''}
       </div>
       <div class="prev-actions-col">
         <button class="btn btn-gold btn-sm" onclick="editarPrevisao(${p.id})">✏️ Editar</button>
@@ -10757,17 +10757,17 @@ function renderAudiencias() {
       <div class="ev-date-block audiencia">
         <div class="ev-day">${d||'--'}</div>
         <div class="ev-month">${meses[parseInt(m)-1]||'--'}</div>
-        ${a.hora ? `<div class="ev-time">${a.hora}</div>` : ''}
+        ${a.hora ? '<div class="ev-time">${a.hora}</div>' : ''}
       </div>
       <div class="ev-info">
         <div class="ev-titulo">${a.cliente} <span class="badge ${statusClass}" style="font-size:0.65rem">${a.status||'Pendente'}</span></div>
         <div class="ev-meta">
           <span>📁 ${a.processo||'—'}</span>
           <span>⚖ ${a.tipo||'—'}</span>
-          ${a.local ? `<span>📍 ${a.local}</span>` : ''}
-          ${a.escritorio ? `<span>🏢 ${a.escritorio}</span>` : ''}
+          ${a.local ? '<span>📍 ${a.local}</span>' : ''}
+          ${a.escritorio ? '<span>🏢 ${a.escritorio}</span>' : ''}
         </div>
-        ${a.obs ? `<div class="ev-obs">${a.obs}</div>` : ''}
+        ${a.obs ? '<div class="ev-obs">${a.obs}</div>' : ''}
       </div>
       <div class="ev-actions">
         <button class="btn btn-gold btn-sm" onclick="editarAudiencia(${a.id})">✏️ Editar</button>
@@ -10850,17 +10850,17 @@ function renderPericias() {
       <div class="ev-date-block pericia">
         <div class="ev-day">${d||'--'}</div>
         <div class="ev-month">${meses[parseInt(m)-1]||'--'}</div>
-        ${p.hora ? `<div class="ev-time">${p.hora}</div>` : ''}
+        ${p.hora ? '<div class="ev-time">${p.hora}</div>' : ''}
       </div>
       <div class="ev-info">
         <div class="ev-titulo">${p.cliente} <span class="badge ${statusClass}" style="font-size:0.65rem">${p.status||'Pendente'}</span></div>
         <div class="ev-meta">
           <span>📁 ${p.processo||'—'}</span>
           <span>🩺 ${p.tipo||'—'}</span>
-          ${p.local ? `<span>📍 ${p.local}</span>` : ''}
-          ${p.perito ? `<span>👨‍⚕️ ${p.perito}</span>` : ''}
+          ${p.local ? '<span>📍 ${p.local}</span>' : ''}
+          ${p.perito ? '<span>👨‍⚕️ ${p.perito}</span>' : ''}
         </div>
-        ${p.obs ? `<div class="ev-obs">${p.obs}</div>` : ''}
+        ${p.obs ? '<div class="ev-obs">${p.obs}</div>' : ''}
       </div>
       <div class="ev-actions">
         <button class="btn btn-gold btn-sm" onclick="editarPericia(${p.id})">✏️ Editar</button>
@@ -11086,7 +11086,7 @@ function renderPublicacoes() {
       <div class="pub-partes">
         <strong>Ativo:</strong> ${p.poloAtivo||'—'} &nbsp;·&nbsp; <strong>Passivo:</strong> ${p.poloPassivo||'—'}
       </div>
-      ${p.movimento ? `<div class="pub-movimento">${p.movimento}</div>` : ''}
+      ${p.movimento ? '<div class="pub-movimento">${p.movimento}</div>' : ''}
       <div class="pub-meta">
         <span>📅 Registrada em ${new Date(p.registradaEm).toLocaleDateString('pt-BR')}</span>
       </div>
@@ -11111,12 +11111,12 @@ function verProcesso(id) {
           <div class="retorno-badges">
             <span class="story-tag gold">${esc(p.fase || 'Fase aberta')}</span>
             <span class="story-tag teal">${esc(p.status || 'Em andamento')}</span>
-            ${ctx.proximoPrazo ? `<span class="story-tag">${fmtDate(ctx.proximoPrazo.data)}</span>` : ''}
+            ${ctx.proximoPrazo ? '<span class="story-tag">${fmtDate(ctx.proximoPrazo.data)}</span>' : ''}
           </div>
         </div>
         <div class="detail-grid" style="margin-bottom:0">
           <div class="detail-item"><label>Assunto</label><span>${esc(p.assunto || '—')}</span></div>
-          <div class="detail-item"><label>Proximo prazo</label><span>${ctx.proximoPrazo ? esc(`${ctx.proximoPrazo.desc} em ${fmtDate(ctx.proximoPrazo.data)}`) : 'Sem prazo cadastrado'}</span></div>
+          <div class="detail-item"><label>Proximo prazo</label><span>${ctx.proximoPrazo ? esc(ctx.proximoPrazo.desc + ' em ' + fmtDate(ctx.proximoPrazo.data)) : 'Sem prazo cadastrado'}</span></div>
           <div class="detail-item"><label>Audiencias</label><span>${ctx.audiencias.length}</span></div>
           <div class="detail-item"><label>Pericias</label><span>${ctx.pericias.length}</span></div>
         </div>
@@ -11151,7 +11151,7 @@ function verProcesso(id) {
             </div>
             <div class="retorno-item">
               <div>💰</div>
-              <div><strong>Impacto financeiro</strong><span>${ctx.totalAberto > 0 ? `Ha R$ ${ctx.totalAberto.toFixed(2)} vinculados ao caso ainda nao recebidos.` : 'Sem honorarios pendentes no momento.'}</span></div>
+              <div><strong>Impacto financeiro</strong><span>${ctx.totalAberto > 0 ? 'Ha R$ ' + ctx.totalAberto.toFixed(2) + ' vinculados ao caso.' : 'Sem honorarios pendentes no momento.'}</span></div>
             </div>
           </div>
         </div>
@@ -11168,20 +11168,20 @@ function verProcesso(id) {
           <div class="retorno-list">
             <div class="retorno-item">
               <div>💸</div>
-              <div><strong>Honorarios em aberto</strong><span>${ctx.totalAberto > 0 ? `R$ ${ctx.totalAberto.toFixed(2)}` : 'Nenhum valor em aberto.'}</span></div>
+              <div><strong>Honorarios em aberto</strong><span>${ctx.totalAberto > 0 ? 'R$ ' + ctx.totalAberto.toFixed(2) : 'Nenhum valor em aberto.'}</span></div>
             </div>
             <div class="retorno-item">
               <div>⏰</div>
-              <div><strong>Valores em atraso</strong><span>${ctx.totalAtraso > 0 ? `R$ ${ctx.totalAtraso.toFixed(2)} marcados como em atraso.` : 'Sem atraso financeiro registrado.'}</span></div>
+              <div><strong>Valores em atraso</strong><span>${ctx.totalAtraso > 0 ? 'R$ ' + ctx.totalAtraso.toFixed(2) + ' em atraso.' : 'Sem atraso financeiro registrado.'}</span></div>
             </div>
             <div class="retorno-item">
               <div>📜</div>
-              <div><strong>RPV / Precatório</strong><span>${ctx.rpv ? `${esc(ctx.rpv.tipo || 'RPV')} em status ${esc(ctx.rpv.status || 'Aguardando')}.` : 'Sem RPV ou precatorio vinculado.'}</span></div>
+              <div><strong>RPV / Precatório</strong><span>${ctx.rpv ? esc(ctx.rpv.tipo||'RPV') + ' em status ' + esc(ctx.rpv.status||'Aguardando') + '.' : 'Sem RPV ou precatorio vinculado.'}</span></div>
             </div>
           </div>
         </div>
       </div>
-      ${p.obs ? `<div class="case-panel"><h4>Observacoes internas</h4><div class="detail-obs">${esc(p.obs)}</div></div>` : ''}
+      ${p.obs ? '<div class="case-panel"><h4>Observacoes internas</h4><div class="detail-obs">${esc(p.obs)}</div></div>' : ''}
     </div>`;
   document.getElementById('ver-processo-edit-btn').onclick = () => { closeModal('modal-ver-processo'); editarProcesso(id); };
   openModal('modal-ver-processo');
@@ -11337,11 +11337,11 @@ function verCliente(id) {
             </div>
             <div class="retorno-item">
               <div>📅</div>
-              <div><strong>Proximo marco</strong><span>${ctx.proximoPrazo ? esc(`${ctx.proximoPrazo.desc} em ${fmtDate(ctx.proximoPrazo.data)}`) : 'Sem prazo futuro vinculado no momento.'}</span></div>
+              <div><strong>Proximo marco</strong><span>${ctx.proximoPrazo ? esc(ctx.proximoPrazo.desc + ' em ' + fmtDate(ctx.proximoPrazo.data)) : 'Sem prazo futuro vinculado no momento.'}</span></div>
             </div>
             <div class="retorno-item">
               <div>💰</div>
-              <div><strong>Financeiro</strong><span>${totalAberto > 0 ? `Ha R$ ${totalAberto.toFixed(2)} em honorarios ainda nao recebidos.` : 'Sem honorarios em aberto para este cliente.'}</span></div>
+              <div><strong>Financeiro</strong><span>${totalAberto > 0 ? 'Ha R$ ' + totalAberto.toFixed(2) + ' em honorarios.' : 'Sem honorarios em aberto para este cliente.'}</span></div>
             </div>
           </div>
         </div>
@@ -11365,11 +11365,11 @@ function verCliente(id) {
           <div class="detail-grid">
             <div class="detail-item"><label>Tipo</label><span>${esc(c.tipo||'—')}</span></div>
             <div class="detail-item"><label>Tipo de Caso</label><span>${esc(c.tipoCaso||'—')}</span></div>
-            ${c.parceiro ? `<div class='detail-item'><label>Parceiro</label><span style='color:var(--gold-dark)'>${esc(c.parceiro)} ${c.parceiroPct ? '(' + c.parceiroPct + '%)' : ''}</span></div>` : ''}
+            ${c.parceiro ? '<div class=\'detail-item\'><label>Parceiro</label><span style=\'color:var(--gold-dark)\'>${esc(c.parceiro)} ${c.parceiroPct ? \'(\' + c.parceiroPct + \'%)\' : \'\'}</span></div>' : ''}
             <div class="detail-item"><label>Processos</label><span>${nProc}</span></div>
           </div>
-          ${c.end ? `<div class="detail-full"><label>Endereço</label><div class="detail-obs">${esc(c.end)}</div></div>` : ''}
-          ${c.obs ? `<div class="detail-full"><label>Observações internas</label><div class="detail-obs">${esc(c.obs)}</div></div>` : ''}
+          ${c.end ? '<div class="detail-full"><label>Endereço</label><div class="detail-obs">${esc(c.end)}</div></div>' : ''}
+          ${c.obs ? '<div class="detail-full"><label>Observações internas</label><div class="detail-obs">${esc(c.obs)}</div></div>' : ''}
         </div>
       </div>
     </div>`;
@@ -11638,9 +11638,9 @@ function renderAtendimentos() {
             <div class="atend-month">${meses[parseInt(m)]||'--'}</div>
           </div>
           <div class="atend-info" style="cursor:pointer;flex:1" onclick="verAtendimento(${a.id})">
-            <div class="atend-cliente">${esc(a.clienteNome)} <span class="escrit-pill escrit-${idx}">${esc(a.escritorio)}</span> ${a.tipoCaso ? `<span class="tipo-caso-badge">${esc(a.tipoCaso)}</span>` : ''}</div>
-            <div class="atend-meta">Processo: ${esc(a.processo || '—')}${a.parceiro ? ` &nbsp;·&nbsp; 🤝 <span style='color:var(--gold-dark)'>${esc(a.parceiro)}</span>` : ''}</div>
-            ${a.obs ? `<div class="atend-obs">${escObs(a.obs)}</div>` : ''}
+            <div class="atend-cliente">${esc(a.clienteNome)} <span class="escrit-pill escrit-${idx}">${esc(a.escritorio)}</span> ${a.tipoCaso ? '<span class="tipo-caso-badge">${esc(a.tipoCaso)}</span>' : ''}</div>
+            <div class="atend-meta">Processo: ${esc(a.processo || '—')}${a.parceiro ? ' &nbsp;·&nbsp; 🤝 <span style=\'color:var(--gold-dark)\'>' + esc(a.parceiro) + '</span>' : ''}</div>
+            ${a.obs ? '<div class="atend-obs">${escObs(a.obs)}</div>' : ''}
           </div>
           <div class="atend-actions">
             <button class="btn btn-outline btn-sm" id="doc-btn-${a.id}" onclick="toggleDocSection(${a.id})">📋 Documentos</button>
@@ -11900,13 +11900,13 @@ function renderProcessNarratives() {
           ${statusBadge(p.status || 'Em andamento')}
         </div>
         <div class="story-tags">
-          ${p.assunto ? `<span class="story-tag">${esc(p.assunto)}</span>` : ''}
-          <span class="story-tag ${prazoTone}">${ctx.nextPrazo ? `Prazo ${fmtDate(ctx.nextPrazo.data)}` : 'Sem prazo registrado'}</span>
+          ${p.assunto ? '<span class="story-tag">${esc(p.assunto)}</span>' : ''}
+          <span class="story-tag ${prazoTone}">${ctx.nextPrazo ? 'Prazo ' + fmtDate(ctx.nextPrazo.data) : 'Sem prazo registrado'}</span>
           ${_iff(ctx.relatedHon.some(h => h.status === 'Em atraso'), "<span class=\"story-tag red\">Financeiro em atraso</span>")}
         </div>
         <div class="story-signal">
           <div class="story-signal-label">Ultimo movimento</div>
-          <div class="story-signal-text">${esc(ctx.latestEvent ? `${ctx.latestEvent.tipo}: ${ctx.latestEvent.texto}` : (p.obs || 'Sem movimentacao descrita ainda.'))}</div>
+          <div class="story-signal-text">${esc(ctx.latestEvent ? ctx.latestEvent.tipo + ': ' + ctx.latestEvent.texto : (p.obs || 'Sem movimentacao descrita ainda.'))}</div>
         </div>
         <div class="story-signal">
           <div class="story-signal-label">Proximo passo sugerido</div>
@@ -11930,7 +11930,7 @@ function renderProcessNarratives() {
         <div class="story-tags">
           <span class="story-tag teal">${ctx.latestEvent?.tipo || 'Sem evento'}</span>
           <span class="story-tag">${atendTxt}</span>
-          ${atraso ? `<span class="story-tag red">${atraso} atraso(s) financeiro(s)</span>` : ''}
+          ${atraso ? '<span class="story-tag red">${atraso} atraso(s) financeiro(s)</span>' : ''}
         </div>
         <div class="story-signal">
           <div class="story-signal-label">Leitura rapida</div>
@@ -11977,11 +11977,11 @@ function filtrarProcessos() {
     tbody.innerHTML += `<tr>
       <td style="max-width:190px">
         <div style="font-family:monospace;font-size:0.76rem;font-weight:600;color:var(--teal)">${esc(p.numero)}</div>
-        ${p.tribunal ? `<div style="font-size:0.68rem;color:var(--muted);margin-top:2px">${esc(p.tribunal)}</div>` : ''}
+        ${p.tribunal ? '<div style="font-size:0.68rem;color:var(--muted);margin-top:2px">${esc(p.tribunal)}</div>' : ''}
       </td>
       <td>
         <div style="font-weight:500;font-size:0.85rem">${esc(p.clienteNome||'—')}</div>
-        ${p.area ? `<div style="font-size:0.71rem;color:var(--muted)">${esc(p.area)}</div>` : ''}
+        ${p.area ? '<div style="font-size:0.71rem;color:var(--muted)">${esc(p.area)}</div>' : ''}
       </td>
       <td style="font-size:0.82rem">${esc(p.fase||'—')}</td>
       <td>${statusBadge(p.status)}</td>
@@ -12268,28 +12268,29 @@ function getProcessCenterContext(p) {
     }).join('');
 
     // Lançamentos rows
-    const lancRows = g.lancamentos.map(l => `
-      <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.8rem">
-        <span class="badge badge-gray" style="font-size:0.65rem;flex-shrink:0">💰</span>
-        <div style="flex:1">
-          <div style="font-weight:500;color:var(--navy)">${esc(l.desc||'—')}</div>
-          <div style="color:var(--muted);font-size:0.72rem">${fmtDate(l.venc)}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-weight:700;color:var(--navy)">${fmt(l.valor||0)}</div>
-          ${statusBadge(l.status||'A receber')}
-        </div>
-        <button class="btn btn-outline btn-sm" onclick="editarHonorario(${l.id})" style="flex-shrink:0">✏️</button>
-        <button class="btn btn-danger btn-sm" onclick="deletar('honorarios',${l.id})" style="flex-shrink:0">✕</button>
-      </div>`).join('');
+    const lancRows = g.lancamentos.map(l =>
+      '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.8rem">' +
+        '<span class="badge badge-gray" style="font-size:0.65rem;flex-shrink:0">💰</span>' +
+        '<div style="flex:1">' +
+          '<div style="font-weight:500;color:var(--navy)">' + esc(l.desc||'—') + '</div>' +
+          '<div style="color:var(--muted);font-size:0.72rem">' + fmtDate(l.venc) + '</div>' +
+        '</div>' +
+        '<div style="text-align:right;flex-shrink:0">' +
+          '<div style="font-weight:700;color:var(--navy)">' + fmt(l.valor||0) + '</div>' +
+          statusBadge(l.status||'A receber') +
+        '</div>' +
+        '<button class="btn btn-outline btn-sm" onclick="editarHonorario(' + l.id + ')" style="flex-shrink:0">✏️</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="deletar('honorarios',' + l.id + ')" style="flex-shrink:0">✕</button>' +
+      '</div>'
+    ).join('');
 
     return `<div class="hon-cliente-card">
       <!-- CABEÇALHO -->
       <div class="hon-cliente-header" onclick="toggleHonCard(${idx})">
         <div style="flex:1">
           <div class="hon-cliente-nome">👤 ${esc(g.nome)}</div>
-          ${g.processo ? `<div class="hon-cliente-proc">📁 ${esc(g.processo)}</div>` : ''}
-          ${g.parcContratoNome||g.parcRpvNome ? `<div style="font-size:0.72rem;color:var(--gold-dark);margin-top:2px">🤝 ${esc(g.parcContratoNome||g.parcRpvNome)}</div>` : ''}
+          ${g.processo ? '<div class="hon-cliente-proc">📁 ${esc(g.processo)}</div>' : ''}
+          ${g.parcContratoNome||g.parcRpvNome ? '<div style="font-size:0.72rem;color:var(--gold-dark);margin-top:2px">🤝 ${esc(g.parcContratoNome||g.parcRpvNome)}</div>' : ''}
         </div>
         <!-- RESUMO NO HEADER -->
         <div style="display:flex;gap:12px;align-items:center;flex-shrink:0">
@@ -12301,10 +12302,10 @@ function getProcessCenterContext(p) {
             <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">RPV (hon.)</div>
             <div style="font-weight:700;color:#1e40af;font-size:0.95rem">${g.rpvHon > 0 ? fmt(g.rpvHon) : '—'}</div>
           </div>
-          ${totalParceiro > 0 ? `<div style="text-align:right">
+          ${totalParceiro > 0 ? '<div style="text-align:right">
             <div style="font-size:0.65rem;color:var(--gold-dark);text-transform:uppercase;letter-spacing:0.5px">🤝 Parceiro</div>
             <div style="font-weight:700;color:var(--gold-dark);font-size:0.95rem">${fmt(totalParceiro)}</div>
-          </div>` : ''}
+          </div>' : ''}
           <div style="padding:10px 16px;background:rgba(42,122,114,0.08);border:2px solid var(--teal);border-radius:8px;text-align:center;min-width:120px">
             <div style="font-size:0.65rem;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:0.5px">✅ VOCÊ FICA</div>
             <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--teal)">${fmt(totalVoceFica)}</div>
@@ -12322,7 +12323,7 @@ function getProcessCenterContext(p) {
             <div class="hon-val-box">
               <div class="hon-val-label">💰 Contrato total</div>
               <div class="hon-val-num">${fmt(g.contratoTotal)}</div>
-              ${g.parcContratoPct > 0 ? `<div style="font-size:0.68rem;color:var(--gold-dark);margin-top:2px">Parceiro: ${fmt(parcContratoVal)}</div>` : ''}
+              ${g.parcContratoPct > 0 ? '<div style="font-size:0.68rem;color:var(--gold-dark);margin-top:2px">Parceiro: ${fmt(parcContratoVal)}</div>' : ''}
             </div>
             <div class="hon-val-box">
               <div class="hon-val-label">📜 RPV (valor bruto)</div>
@@ -12332,7 +12333,7 @@ function getProcessCenterContext(p) {
             <div class="hon-val-box parceiro">
               <div class="hon-val-label">🤝 Total parceiro</div>
               <div class="hon-val-num">${fmt(totalParceiro)}</div>
-              ${g.parcContratoNome ? `<div style="font-size:0.65rem;color:var(--muted);margin-top:2px">${esc(g.parcContratoNome)}</div>` : ''}
+              ${g.parcContratoNome ? '<div style="font-size:0.65rem;color:var(--muted);margin-top:2px">${esc(g.parcContratoNome)}</div>' : ''}
             </div>
             <div class="hon-val-box destaque">
               <div class="hon-val-label">✅ Você fica</div>
@@ -12354,7 +12355,7 @@ function getProcessCenterContext(p) {
           <!-- AÇÕES -->
           <div style="display:flex;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
             <button class="btn btn-gold btn-sm" onclick="abrirLancamentoCliente('${esc(g.nome)}','${esc(g.processo)}')">+ Novo Lançamento</button>
-            ${g.rpvs.length > 0 ? `<button class="btn btn-outline btn-sm" onclick="editarRpv(${g.rpvs[0].id})">✏️ Editar RPV</button>` : ''}
+            ${g.rpvs.length > 0 ? '<button class="btn btn-outline btn-sm" onclick="editarRpv(${g.rpvs[0].id})">✏️ Editar RPV</button>' : ''}
           </div>
         </div>
       </div>
@@ -12523,8 +12524,8 @@ function renderHonorarios() {
       <td>${tipoTag}</td>
       <td>
         <strong style="font-size:0.84rem">${esc(h.clienteNome)}</strong>
-        ${h.desc ? `<br><span style="font-size:0.74rem;color:var(--muted)">${esc(h.desc)}</span>` : ''}
-        ${h._tipo==='rpv' && h._valorBruto ? `<br><span style="font-size:0.7rem;color:var(--muted)">Causa: ${fmt(h._valorBruto)}</span>` : ''}
+        ${h.desc ? '<br><span style="font-size:0.74rem;color:var(--muted)">${esc(h.desc)}</span>' : ''}
+        ${h._tipo==='rpv' && h._valorBruto ? '<br><span style="font-size:0.7rem;color:var(--muted)">Causa: ${fmt(h._valorBruto)}</span>' : ''}
       </td>
       <td style="font-size:0.78rem">${esc(h.processo)||'—'}</td>
       <td><strong>${fmt(h.valor)}</strong></td>
@@ -12823,7 +12824,7 @@ function renderDashboard() {
     dpList.innerHTML = '<div class="empty"><div class="empty-icon">📁</div><p>Nenhum processo.</p></div>';
   } else {
     dpList.innerHTML = `<table><thead><tr><th>Nº Processo</th><th>Cliente</th><th>Status</th></tr></thead><tbody>
-      ${recent.map(p => `<tr><td>${esc(p.numero)}</td><td>${esc(p.clienteNome)}</td><td>${statusBadge(p.status)}</td></tr>`).join('')}
+      ${recent.map(p => '<tr><td>' + esc(p.numero) + '</td><td>' + esc(p.clienteNome) + '</td><td>' + statusBadge(p.status) + '</td></tr>').join('')}
     </tbody></table>`;
   }
 
@@ -12863,7 +12864,7 @@ function renderDashboard() {
           <p>${esc((a.obs || 'Sem observacao').split('\n')[0])}</p>
           <div class="scoreboard-row">
             <span class="scoreboard-chip">${esc(a.escritorio || 'Sem escritorio')}</span>
-            <span style="font-size:0.76rem;color:var(--muted)">${dias < 0 ? `${Math.abs(dias)} dia(s) atras` : `ha ${dias} dia(s)`}</span>
+            <span style="font-size:0.76rem;color:var(--muted)">${dias < 0 ? Math.abs(dias) + ' dia(s) atras' : 'ha ' + dias + ' dia(s)'}</span>
           </div>
         </div>`;
     }).join('');
@@ -13248,15 +13249,11 @@ function renderTarefas() {
           <div class="tarefa-meta">
             <span class="${prioClass}">${t.prioridade}</span>
             ${dataStr}
-            ${t.processo ? `<span>📁 ${esc(t.processo)}</span>` : ''}
-            ${t.escritorio ? `<span>📍 ${esc(t.escritorio)}</span>` : ''}
-            ${t.concluida && t.concluidaEm
-              ? `<span style="color:var(--teal)">✅ ${new Date(t.concluidaEm).toLocaleDateString('pt-BR')}</span>`
-              : ''}
+            ${t.processo ? '<span>📁 ${esc(t.processo)}</span>' : ''}
+            ${t.escritorio ? '<span>📍 ${esc(t.escritorio)}</span>' : ''}
+            ${t.concluida && t.concluidaEm ? '<span style="color:var(--teal)">✅ ' + new Date(t.concluidaEm).toLocaleDateString('pt-BR') + '</span>' : ''}
           </div>
-          ${t.descricao || t.obs
-            ? `<div class="tarefa-obs">${esc(t.descricao || t.obs || '')}</div>`
-            : ''}
+          ${t.descricao || t.obs ? '<div class="tarefa-obs">' + esc(t.descricao || t.obs || '') + '</div>' : ''}
         </div>
         <div class="tarefa-actions">
           <button class="btn btn-gold btn-sm" onclick="editarTarefa(${t.id})">✏️</button>
