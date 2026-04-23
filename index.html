@@ -13536,120 +13536,121 @@ verificarLembreteBackup();
 // Se tiver backup antigo no lex-data, migrar automaticamente e avisar
 if (!localStorage.getItem(STORAGE_KEY) && localStorage.getItem(LEGACY_STORAGE_KEY)) {
   saveData();
+
+// === Expor funções no window para atributos onclick ===
+  try { window.toggleNotifBar = toggleNotifBar; } catch(e) {}
+  try { window.if = if; } catch(e) {}
+  try { window.toggleSenha = toggleSenha; } catch(e) {}
+  try { window.fazerLogin = fazerLogin; } catch(e) {}
+  try { window.showPage = showPage; } catch(e) {}
+  try { window.fazerLogout = fazerLogout; } catch(e) {}
+  try { window.exportarExcel = exportarExcel; } catch(e) {}
+  try { window.importarDados = importarDados; } catch(e) {}
+  try { window.setDashboardMode = setDashboardMode; } catch(e) {}
+  try { window.abrirImportarPJe = abrirImportarPJe; } catch(e) {}
+  try { window.novoProcesso = novoProcesso; } catch(e) {}
+  try { window.buscarProcessos = buscarProcessos; } catch(e) {}
+  try { window.filtrarProcessos = filtrarProcessos; } catch(e) {}
+  try { window.novoCliente = novoCliente; } catch(e) {}
+  try { window.buscarClientesInput = buscarClientesInput; } catch(e) {}
+  try { window.novoContrato = novoContrato; } catch(e) {}
+  try { window.novoPrazo = novoPrazo; } catch(e) {}
+  try { window.novoAtendimento = novoAtendimento; } catch(e) {}
+  try { window.filtrarEscritorio = filtrarEscritorio; } catch(e) {}
+  try { window.renderAtendimentos = renderAtendimentos; } catch(e) {}
+  try { window.openModal = openModal; } catch(e) {}
+  try { window.filtrarTarefas = filtrarTarefas; } catch(e) {}
+  try { window.buscarTarefas = buscarTarefas; } catch(e) {}
+  try { window.novaAudiencia = novaAudiencia; } catch(e) {}
+  try { window.filtrarAudiencias = filtrarAudiencias; } catch(e) {}
+  try { window.novaPericia = novaPericia; } catch(e) {}
+  try { window.filtrarPericias = filtrarPericias; } catch(e) {}
+  try { window.mudarMes = mudarMes; } catch(e) {}
+  try { window.irParaHoje = irParaHoje; } catch(e) {}
+  try { window.novoRpv = novoRpv; } catch(e) {}
+  try { window.filtrarRpv = filtrarRpv; } catch(e) {}
+  try { window.mudarMesRel = mudarMesRel; } catch(e) {}
+  try { window.novoModelo = novoModelo; } catch(e) {}
+  try { window.renderModelos = renderModelos; } catch(e) {}
+  try { window.novaCusta = novaCusta; } catch(e) {}
+  try { window.filtrarCustas = filtrarCustas; } catch(e) {}
+  try { window.novoParceiro = novoParceiro; } catch(e) {}
+  try { window.renderParceiros = renderParceiros; } catch(e) {}
+  try { window.novaPrevisao = novaPrevisao; } catch(e) {}
+  try { window.filtrarPrevisao = filtrarPrevisao; } catch(e) {}
+  try { window.extrairPublicacao = extrairPublicacao; } catch(e) {}
+  try { window.salvarPublicacao = salvarPublicacao; } catch(e) {}
+  try { window.novoHonorario = novoHonorario; } catch(e) {}
+  try { window.filtrarHonorarios = filtrarHonorarios; } catch(e) {}
+  try { window.closeModal = closeModal; } catch(e) {}
+  try { window.salvarAudiencia = salvarAudiencia; } catch(e) {}
+  try { window.salvarPericia = salvarPericia; } catch(e) {}
+  try { window.calcRpv = calcRpv; } catch(e) {}
+  try { window.salvarRpv = salvarRpv; } catch(e) {}
+  try { window.salvarModelo = salvarModelo; } catch(e) {}
+  try { window.salvarCusta = salvarCusta; } catch(e) {}
+  try { window.salvarParceiro = salvarParceiro; } catch(e) {}
+  try { window.calcularHonorarios = calcularHonorarios; } catch(e) {}
+  try { window.calcularLiquido = calcularLiquido; } catch(e) {}
+  try { window.salvarPrevisao = salvarPrevisao; } catch(e) {}
+  try { window.verificarClienteExistente = verificarClienteExistente; } catch(e) {}
+  try { window.toggleInlineCliente = toggleInlineCliente; } catch(e) {}
+  try { window.salvarClienteInline = salvarClienteInline; } catch(e) {}
+  try { window.calcParceiroPct = calcParceiroPct; } catch(e) {}
+  try { window.calcResumoHon = calcResumoHon; } catch(e) {}
+  try { window.toggleEntradaHon = toggleEntradaHon; } catch(e) {}
+  try { window.toggleParcelasHon = toggleParcelasHon; } catch(e) {}
+  try { window.toggleHonLancamento = toggleHonLancamento; } catch(e) {}
+  try { window.calcRpvInline = calcRpvInline; } catch(e) {}
+  try { window.calcRpvInlineManual = calcRpvInlineManual; } catch(e) {}
+  try { window.toggleParceriaRpv = toggleParceriaRpv; } catch(e) {}
+  try { window.calcParceriaRpv = calcParceriaRpv; } catch(e) {}
+  try { window.salvarProcesso = salvarProcesso; } catch(e) {}
+  try { window.adicionarTipoCustomCliente = adicionarTipoCustomCliente; } catch(e) {}
+  try { window.salvarCliente = salvarCliente; } catch(e) {}
+  try { window.salvarContrato = salvarContrato; } catch(e) {}
+  try { window.salvarPrazo = salvarPrazo; } catch(e) {}
+  try { window.salvarTarefa = salvarTarefa; } catch(e) {}
+  try { window.verificarClienteAt = verificarClienteAt; } catch(e) {}
+  try { window.toggleInlineClienteAt = toggleInlineClienteAt; } catch(e) {}
+  try { window.salvarClienteInlineAt = salvarClienteInlineAt; } catch(e) {}
+  try { window.adicionarTipoCustomAtendimento = adicionarTipoCustomAtendimento; } catch(e) {}
+  try { window.salvarAtendimento = salvarAtendimento; } catch(e) {}
+  try { window.calcParceriaHon = calcParceriaHon; } catch(e) {}
+  try { window.toggleParceriaHon = toggleParceriaHon; } catch(e) {}
+  try { window.salvarHonorario = salvarHonorario; } catch(e) {}
+  try { window.selecionarClienteRapido = selecionarClienteRapido; } catch(e) {}
+  try { window.toggleDocStatus = toggleDocStatus; } catch(e) {}
+  try { window.addDocCustom = addDocCustom; } catch(e) {}
+  try { window.editarRpv = editarRpv; } catch(e) {}
+  try { window.deletar = deletar; } catch(e) {}
+  try { window.toggleModeloBody = toggleModeloBody; } catch(e) {}
+  try { window.copiarModelo = copiarModelo; } catch(e) {}
+  try { window.editarModelo = editarModelo; } catch(e) {}
+  try { window.editarCusta = editarCusta; } catch(e) {}
+  try { window.editarParceiro = editarParceiro; } catch(e) {}
+  try { window.editarPrevisao = editarPrevisao; } catch(e) {}
+  try { window.editarAudiencia = editarAudiencia; } catch(e) {}
+  try { window.editarPericia = editarPericia; } catch(e) {}
+  try { window.verAtendimento = verAtendimento; } catch(e) {}
+  try { window.toggleDocSection = toggleDocSection; } catch(e) {}
+  try { window.editarAtendimento = editarAtendimento; } catch(e) {}
+  try { window.verProcesso = verProcesso; } catch(e) {}
+  try { window.editarProcesso = editarProcesso; } catch(e) {}
+  try { window.preencherCliente = preencherCliente; } catch(e) {}
+  try { window.editarHonorario = editarHonorario; } catch(e) {}
+  try { window.toggleHonCard = toggleHonCard; } catch(e) {}
+  try { window.abrirLancamentoCliente = abrirLancamentoCliente; } catch(e) {}
+  try { window.verHonorario = verHonorario; } catch(e) {}
+  try { window.toggleTarefa = toggleTarefa; } catch(e) {}
+  try { window.editarTarefa = editarTarefa; } catch(e) {}
+  try { window.extrairPJe = extrairPJe; } catch(e) {}
+  try { window.importarPJe = importarPJe; } catch(e) {}
+  try { window.buscarClienteRapido = buscarClienteRapido; } catch(e) {}
+  try { window.confirmarCliente = confirmarCliente; } catch(e) {}
+  try { window.adiarBackup = adiarBackup; } catch(e) {}
+  try { window.exportarEFechar = exportarEFechar; } catch(e) {}
 }
-// Expor funções globalmente para uso em atributos onclick
-if (typeof toggleNotifBar !== 'undefined') window.toggleNotifBar = toggleNotifBar;
-if (typeof if !== 'undefined') window.if = if;
-if (typeof toggleSenha !== 'undefined') window.toggleSenha = toggleSenha;
-if (typeof fazerLogin !== 'undefined') window.fazerLogin = fazerLogin;
-if (typeof showPage !== 'undefined') window.showPage = showPage;
-if (typeof fazerLogout !== 'undefined') window.fazerLogout = fazerLogout;
-if (typeof exportarExcel !== 'undefined') window.exportarExcel = exportarExcel;
-if (typeof importarDados !== 'undefined') window.importarDados = importarDados;
-if (typeof setDashboardMode !== 'undefined') window.setDashboardMode = setDashboardMode;
-if (typeof abrirImportarPJe !== 'undefined') window.abrirImportarPJe = abrirImportarPJe;
-if (typeof novoProcesso !== 'undefined') window.novoProcesso = novoProcesso;
-if (typeof buscarProcessos !== 'undefined') window.buscarProcessos = buscarProcessos;
-if (typeof filtrarProcessos !== 'undefined') window.filtrarProcessos = filtrarProcessos;
-if (typeof novoCliente !== 'undefined') window.novoCliente = novoCliente;
-if (typeof buscarClientesInput !== 'undefined') window.buscarClientesInput = buscarClientesInput;
-if (typeof novoContrato !== 'undefined') window.novoContrato = novoContrato;
-if (typeof novoPrazo !== 'undefined') window.novoPrazo = novoPrazo;
-if (typeof novoAtendimento !== 'undefined') window.novoAtendimento = novoAtendimento;
-if (typeof filtrarEscritorio !== 'undefined') window.filtrarEscritorio = filtrarEscritorio;
-if (typeof renderAtendimentos !== 'undefined') window.renderAtendimentos = renderAtendimentos;
-if (typeof openModal !== 'undefined') window.openModal = openModal;
-if (typeof filtrarTarefas !== 'undefined') window.filtrarTarefas = filtrarTarefas;
-if (typeof buscarTarefas !== 'undefined') window.buscarTarefas = buscarTarefas;
-if (typeof novaAudiencia !== 'undefined') window.novaAudiencia = novaAudiencia;
-if (typeof filtrarAudiencias !== 'undefined') window.filtrarAudiencias = filtrarAudiencias;
-if (typeof novaPericia !== 'undefined') window.novaPericia = novaPericia;
-if (typeof filtrarPericias !== 'undefined') window.filtrarPericias = filtrarPericias;
-if (typeof mudarMes !== 'undefined') window.mudarMes = mudarMes;
-if (typeof irParaHoje !== 'undefined') window.irParaHoje = irParaHoje;
-if (typeof novoRpv !== 'undefined') window.novoRpv = novoRpv;
-if (typeof filtrarRpv !== 'undefined') window.filtrarRpv = filtrarRpv;
-if (typeof mudarMesRel !== 'undefined') window.mudarMesRel = mudarMesRel;
-if (typeof novoModelo !== 'undefined') window.novoModelo = novoModelo;
-if (typeof renderModelos !== 'undefined') window.renderModelos = renderModelos;
-if (typeof novaCusta !== 'undefined') window.novaCusta = novaCusta;
-if (typeof filtrarCustas !== 'undefined') window.filtrarCustas = filtrarCustas;
-if (typeof novoParceiro !== 'undefined') window.novoParceiro = novoParceiro;
-if (typeof renderParceiros !== 'undefined') window.renderParceiros = renderParceiros;
-if (typeof novaPrevisao !== 'undefined') window.novaPrevisao = novaPrevisao;
-if (typeof filtrarPrevisao !== 'undefined') window.filtrarPrevisao = filtrarPrevisao;
-if (typeof extrairPublicacao !== 'undefined') window.extrairPublicacao = extrairPublicacao;
-if (typeof salvarPublicacao !== 'undefined') window.salvarPublicacao = salvarPublicacao;
-if (typeof novoHonorario !== 'undefined') window.novoHonorario = novoHonorario;
-if (typeof filtrarHonorarios !== 'undefined') window.filtrarHonorarios = filtrarHonorarios;
-if (typeof closeModal !== 'undefined') window.closeModal = closeModal;
-if (typeof salvarAudiencia !== 'undefined') window.salvarAudiencia = salvarAudiencia;
-if (typeof salvarPericia !== 'undefined') window.salvarPericia = salvarPericia;
-if (typeof calcRpv !== 'undefined') window.calcRpv = calcRpv;
-if (typeof salvarRpv !== 'undefined') window.salvarRpv = salvarRpv;
-if (typeof salvarModelo !== 'undefined') window.salvarModelo = salvarModelo;
-if (typeof salvarCusta !== 'undefined') window.salvarCusta = salvarCusta;
-if (typeof salvarParceiro !== 'undefined') window.salvarParceiro = salvarParceiro;
-if (typeof calcularHonorarios !== 'undefined') window.calcularHonorarios = calcularHonorarios;
-if (typeof calcularLiquido !== 'undefined') window.calcularLiquido = calcularLiquido;
-if (typeof salvarPrevisao !== 'undefined') window.salvarPrevisao = salvarPrevisao;
-if (typeof verificarClienteExistente !== 'undefined') window.verificarClienteExistente = verificarClienteExistente;
-if (typeof toggleInlineCliente !== 'undefined') window.toggleInlineCliente = toggleInlineCliente;
-if (typeof salvarClienteInline !== 'undefined') window.salvarClienteInline = salvarClienteInline;
-if (typeof calcParceiroPct !== 'undefined') window.calcParceiroPct = calcParceiroPct;
-if (typeof calcResumoHon !== 'undefined') window.calcResumoHon = calcResumoHon;
-if (typeof toggleEntradaHon !== 'undefined') window.toggleEntradaHon = toggleEntradaHon;
-if (typeof toggleParcelasHon !== 'undefined') window.toggleParcelasHon = toggleParcelasHon;
-if (typeof toggleHonLancamento !== 'undefined') window.toggleHonLancamento = toggleHonLancamento;
-if (typeof calcRpvInline !== 'undefined') window.calcRpvInline = calcRpvInline;
-if (typeof calcRpvInlineManual !== 'undefined') window.calcRpvInlineManual = calcRpvInlineManual;
-if (typeof toggleParceriaRpv !== 'undefined') window.toggleParceriaRpv = toggleParceriaRpv;
-if (typeof calcParceriaRpv !== 'undefined') window.calcParceriaRpv = calcParceriaRpv;
-if (typeof salvarProcesso !== 'undefined') window.salvarProcesso = salvarProcesso;
-if (typeof adicionarTipoCustomCliente !== 'undefined') window.adicionarTipoCustomCliente = adicionarTipoCustomCliente;
-if (typeof salvarCliente !== 'undefined') window.salvarCliente = salvarCliente;
-if (typeof salvarContrato !== 'undefined') window.salvarContrato = salvarContrato;
-if (typeof salvarPrazo !== 'undefined') window.salvarPrazo = salvarPrazo;
-if (typeof salvarTarefa !== 'undefined') window.salvarTarefa = salvarTarefa;
-if (typeof verificarClienteAt !== 'undefined') window.verificarClienteAt = verificarClienteAt;
-if (typeof toggleInlineClienteAt !== 'undefined') window.toggleInlineClienteAt = toggleInlineClienteAt;
-if (typeof salvarClienteInlineAt !== 'undefined') window.salvarClienteInlineAt = salvarClienteInlineAt;
-if (typeof adicionarTipoCustomAtendimento !== 'undefined') window.adicionarTipoCustomAtendimento = adicionarTipoCustomAtendimento;
-if (typeof salvarAtendimento !== 'undefined') window.salvarAtendimento = salvarAtendimento;
-if (typeof calcParceriaHon !== 'undefined') window.calcParceriaHon = calcParceriaHon;
-if (typeof toggleParceriaHon !== 'undefined') window.toggleParceriaHon = toggleParceriaHon;
-if (typeof salvarHonorario !== 'undefined') window.salvarHonorario = salvarHonorario;
-if (typeof selecionarClienteRapido !== 'undefined') window.selecionarClienteRapido = selecionarClienteRapido;
-if (typeof toggleDocStatus !== 'undefined') window.toggleDocStatus = toggleDocStatus;
-if (typeof addDocCustom !== 'undefined') window.addDocCustom = addDocCustom;
-if (typeof editarRpv !== 'undefined') window.editarRpv = editarRpv;
-if (typeof deletar !== 'undefined') window.deletar = deletar;
-if (typeof toggleModeloBody !== 'undefined') window.toggleModeloBody = toggleModeloBody;
-if (typeof copiarModelo !== 'undefined') window.copiarModelo = copiarModelo;
-if (typeof editarModelo !== 'undefined') window.editarModelo = editarModelo;
-if (typeof editarCusta !== 'undefined') window.editarCusta = editarCusta;
-if (typeof editarParceiro !== 'undefined') window.editarParceiro = editarParceiro;
-if (typeof editarPrevisao !== 'undefined') window.editarPrevisao = editarPrevisao;
-if (typeof editarAudiencia !== 'undefined') window.editarAudiencia = editarAudiencia;
-if (typeof editarPericia !== 'undefined') window.editarPericia = editarPericia;
-if (typeof verAtendimento !== 'undefined') window.verAtendimento = verAtendimento;
-if (typeof toggleDocSection !== 'undefined') window.toggleDocSection = toggleDocSection;
-if (typeof editarAtendimento !== 'undefined') window.editarAtendimento = editarAtendimento;
-if (typeof verProcesso !== 'undefined') window.verProcesso = verProcesso;
-if (typeof editarProcesso !== 'undefined') window.editarProcesso = editarProcesso;
-if (typeof preencherCliente !== 'undefined') window.preencherCliente = preencherCliente;
-if (typeof editarHonorario !== 'undefined') window.editarHonorario = editarHonorario;
-if (typeof toggleHonCard !== 'undefined') window.toggleHonCard = toggleHonCard;
-if (typeof abrirLancamentoCliente !== 'undefined') window.abrirLancamentoCliente = abrirLancamentoCliente;
-if (typeof verHonorario !== 'undefined') window.verHonorario = verHonorario;
-if (typeof toggleTarefa !== 'undefined') window.toggleTarefa = toggleTarefa;
-if (typeof editarTarefa !== 'undefined') window.editarTarefa = editarTarefa;
-if (typeof extrairPJe !== 'undefined') window.extrairPJe = extrairPJe;
-if (typeof importarPJe !== 'undefined') window.importarPJe = importarPJe;
-if (typeof buscarClienteRapido !== 'undefined') window.buscarClienteRapido = buscarClienteRapido;
-if (typeof confirmarCliente !== 'undefined') window.confirmarCliente = confirmarCliente;
-if (typeof adiarBackup !== 'undefined') window.adiarBackup = adiarBackup;
-if (typeof exportarEFechar !== 'undefined') window.exportarEFechar = exportarEFechar;
 </script>
 
 <!-- MODAL LEMBRETE DE BACKUP -->
