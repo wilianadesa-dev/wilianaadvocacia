@@ -5484,7 +5484,7 @@ function selecionarClienteRapido(id, nome) {
   document.getElementById('preencher-busca').value = nome;
   document.getElementById('preencher-sugestoes').style.display = 'none';
   document.getElementById('preencher-nome-novo').value = '';
-  showToast(`Cliente selecionado: ${nome}`, 'info');
+  showToast('Cliente selecionado: ' + nome, 'info');
 }
 
 async function confirmarCliente() {
@@ -5560,7 +5560,7 @@ async function confirmarCliente() {
   saveData();
   renderAll();
   closeModal('modal-preencher-cliente');
-  showToast(`Cliente "${clienteNome}" vinculado ao processo!`, 'success');
+  showToast('Cliente "' + clienteNome + '" vinculado ao processo!',  'success');
 }
 
 document.addEventListener('DOMContentLoaded', inicializarAuth);
@@ -5761,8 +5761,8 @@ function atualizarResumoProcesso() {
   const det = el('proc-res-parceiro-det');
   if(det) {
     const partes = [];
-    if(honParcVal > 0) partes.push(`Contrato: ${fmt(honParcVal)} (${honParcNome||honParcPct+'%'})`);
-    if(rpvParcVal > 0) partes.push(`RPV: ${fmt(rpvParcVal)} (${rpvParcNome||rpvParcPct+'%'})`);
+    if(honParcVal > 0) partes.push('Contrato: ' + fmt(honParcVal) + ' (' + (honParcNome||honParcPct+'%') + ')');
+    if(rpvParcVal > 0) partes.push('RPV: ' + fmt(rpvParcVal) + ' (' + (rpvParcNome||rpvParcPct+'%') + ')');
     det.textContent = partes.join(' + ') || '';
   }
 }
@@ -11781,7 +11781,7 @@ function salvarProcesso() {
     data.clientes.push(novoCliente);
     dados.clienteId = novoCliente.id;
     syncToSupabase('clientes', novoCliente);
-    showToast(`Cliente "${clienteNomeInput}" criado automaticamente!`, 'info');
+    showToast('Cliente "' + clienteNomeInput + '" criado automaticamente!', 'info');
   }
   saveData(); syncToSupabase('processos', dados).then(()=>mostrarSyncStatus(true)).catch(()=>mostrarSyncStatus(false)); closeModal('modal-processo'); renderAll(); showToast('Processo salvo com sucesso!','success');
   document.getElementById('p-edit-id').value = '';
