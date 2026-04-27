@@ -1981,7 +1981,6 @@
   <div class="notif-list" id="notif-list"></div>
 </div>
 
-
 <!-- ═══════════════════════════════════════════════
      TELA DE LOGIN
 ═══════════════════════════════════════════════ -->
@@ -2652,8 +2651,6 @@
       </div>
     </div>
 
-
-
     <!-- AUDIÊNCIAS -->
     <div id="page-audiencias" class="page">
       <div class="topbar">
@@ -2675,7 +2672,6 @@
       </div>
     </div>
 
-
     <!-- PERÍCIAS -->
     <div id="page-pericias" class="page">
       <div class="topbar">
@@ -2695,7 +2691,6 @@
         </div>
       </div>
     </div>
-
 
     <!-- AGENDA -->
     <div id="page-agenda" class="page">
@@ -2733,9 +2728,6 @@
         </div>
       </div>
     </div>
-
-
-
 
     <!-- RPV & PRECATÓRIOS -->
     <div id="page-rpv" class="page">
@@ -2792,7 +2784,6 @@
       </div>
     </div>
 
-
     <!-- RELATÓRIO MENSAL -->
     <div id="page-relatorio" class="page">
       <div class="topbar">
@@ -2829,7 +2820,6 @@
       </div>
     </div>
 
-
     <!-- MODELOS DE PETIÇÃO -->
     <div id="page-modelos" class="page">
       <div class="topbar">
@@ -2857,7 +2847,6 @@
         <div class="escritorio-grid" id="painel-escritorios-grid"></div>
       </div>
     </div>
-
 
     <!-- CUSTAS & DESPESAS -->
     <div id="page-custas" class="page">
@@ -2907,7 +2896,6 @@
         </div>
       </div>
     </div>
-
 
     <!-- PARCEIROS -->
     <div id="page-parceiros" class="page">
@@ -3164,7 +3152,6 @@
   </main>
 </div>
 
-
 <!-- MODAL VER PROCESSO -->
 <div class="modal-overlay" id="modal-ver-processo">
   <div class="modal">
@@ -3213,7 +3200,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- MODAL AUDIÊNCIA -->
 <div class="modal-overlay" id="modal-audiencia">
@@ -3349,9 +3335,6 @@
     </div>
   </div>
 </div>
-
-
-
 
 <!-- MODAL RPV -->
 <div class="modal-overlay" id="modal-rpv">
@@ -5451,7 +5434,6 @@ async function importarPJe() {
   if (btn) { btn.disabled = false; btn.textContent = '💾 Importar no Sistema'; }
 }
 
-
 // ═══════════════════════════════════════════════
 // PREENCHER CLIENTE RÁPIDO NO PROCESSO
 // ═══════════════════════════════════════════════
@@ -5582,10 +5564,6 @@ async function confirmarCliente() {
 }
 
 document.addEventListener('DOMContentLoaded', inicializarAuth);
-
-
-
-
 
 // ═══════════════════════════════════════════════
 // PARCERIA NA ABA RPV DO PROCESSO
@@ -5728,7 +5706,6 @@ function salvarClienteInlineAt() {
   renderClientes();
 }
 
-
 // ═══════════════════════════════════════════════
 // RESUMO FINANCEIRO DO PROCESSO (modal)
 // ═══════════════════════════════════════════════
@@ -5804,7 +5781,6 @@ function switchProcessoTab(tab) {
   // Atualizar resumo sempre que trocar de aba
   setTimeout(atualizarResumoProcesso, 50);
 }
-
 
 function toggleEntradaHon() {
   const tem = document.getElementById('ph-tem-entrada').value === 'sim';
@@ -5892,7 +5868,6 @@ function calcResumoHon() {
     }
   }
 }
-
 
 function calcRpvInline() {
   const bruto    = parseFloat(document.getElementById('pr2-bruto')?.value)||0;
@@ -6253,7 +6228,6 @@ function excelSafeCell(value) {
   const sanitized = /^[=+\-@]/.test(str) ? "'" + str : str;
   return esc(sanitized).replace(/\n/g, '<br>');
 }
-
 
 // DATA STORE
 const ATENDIMENTOS_PDF = [
@@ -9209,7 +9183,6 @@ function loadData() {
   saveData();
 }
 
-
 // ═══════════════════════════════════════════════
 // SYNC SUPABASE — camada de sincronização
 // Cada salvar* chama localStorage E Supabase
@@ -9574,10 +9547,6 @@ function buscarProcessos(q) {
   }
 }
 
-
-
-
-
 const DOCS_PADRAO = [
   { id: 'rg', nome: 'RG / CNH', icone: '🪪' },
   { id: 'cpf', nome: 'CPF', icone: '📄' },
@@ -9596,7 +9565,6 @@ const DOCS_PADRAO = [
   { id: 'foto', nome: 'Foto 3x4', icone: '📷' },
   { id: 'declaracao_rural', nome: 'Declaração Sindical Rural', icone: '🌿' },
 ];
-
 
 // ═══════════════════════════════════════════════
 // TIPOS DE CASO
@@ -9671,7 +9639,6 @@ function toggleDocStatus(atendId, docId) {
   renderDocChecklist(atendId);
 }
 
-
 function updateDocObs(atendId, docId, val) {
   const docs = getDocsAtendimento(atendId);
   const doc = docs.find(d => d.id === docId);
@@ -9733,10 +9700,6 @@ function toggleDocSection(atendId) {
   btn.textContent = isOpen ? '📋 Documentos' : '📋 Fechar Documentos';
   if (!isOpen) renderDocChecklist(atendId);
 }
-
-
-
-
 
 // ═══════════════════════════════════════════════
 // SISTEMA DE NOTIFICAÇÕES
@@ -12382,7 +12345,6 @@ function abrirLancamentoCliente(nome, processo) {
   }, 100);
 }
 
-
 let filtroHonorarios = 'cliente';
 
 function filtrarHonorarios(f, el) {
@@ -13094,7 +13056,6 @@ function filtrarTarefas(filtro, el) {
   renderTarefas();
 }
 
-
 // ═══════════════════════════════════════════════
 // EDITAR TAREFA
 // ═══════════════════════════════════════════════
@@ -13396,7 +13357,6 @@ Exemplo:
   </div>
 </div>
 
-
 <!-- MODAL PREENCHER CLIENTE RÁPIDO -->
 <div class="modal-overlay" id="modal-preencher-cliente">
   <div class="modal" style="max-width:480px">
@@ -13482,7 +13442,6 @@ function importarDados(event) {
   event.target.value = '';
 }
 
-
 // ═══════════════════════════════════════════════
 // LEMBRETE DE BACKUP
 // ═══════════════════════════════════════════════
@@ -13563,7 +13522,6 @@ if (!localStorage.getItem(STORAGE_KEY) && localStorage.getItem(LEGACY_STORAGE_KE
   </div>
 </div>
 
-
 <!-- MODAL IMPORTAR PJe -->
 <div class="modal-overlay" id="modal-importar-pje">
   <div class="modal" style="max-width:620px">
@@ -13621,7 +13579,6 @@ Exemplo:
     </div>
   </div>
 </div>
-
 
 <!-- MODAL PREENCHER CLIENTE RÁPIDO -->
 <div class="modal-overlay" id="modal-preencher-cliente">
