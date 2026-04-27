@@ -4792,6 +4792,10 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
 // ── Estado global de sessão ───────────────────────
 let sessaoAtual = null;
 let perfilUsuario = null;
+let dashboardMode = 'kanban';
+let paginaAtual = 'dashboard';
+let filtroProcessos = '';
+let filtroClientes = '';
 
 // ── Inicializar autenticação ao carregar ──────────
 async function inicializarAuth() {
