@@ -12127,6 +12127,7 @@ function getProcessCenterContext(p) {
   const perPendente = pericias.find(x => (x.status || 'Pendente') === 'Pendente');
   const totalAberto = honorarios.filter(h => h.status !== 'Recebido').reduce((sum, h) => sum + (parseFloat(h.valor) || 0), 0);
   const totalAtraso = honorarios.filter(h => h.status === 'Em atraso').reduce((sum, h) => sum + (parseFloat(h.valor) || 0), 0);
+  const ultimoMov = timeline[0] || null;
 
   let nextStep = 'Atualizar o caso e registrar o proximo movimento juridico.';
   if (proximoPrazo) {
