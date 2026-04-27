@@ -5120,7 +5120,13 @@ async function carregarTodosDados() {
     data.tarefas      = (tarefas     ||[]).map(mapTarefa);
     data.prazos       = (prazos      ||[]).map(mapPrazo);
 
-    renderAll();
+    // Inicializar vars globais necessárias para render
+    if (typeof dashboardMode === 'undefined') window.dashboardMode = 'kanban';
+    if (typeof paginaAtual === 'undefined')   window.paginaAtual   = 'dashboard';
+    if (typeof filtroProcessos === 'undefined') window.filtroProcessos = '';
+    if (typeof filtroClientes === 'undefined')  window.filtroClientes  = '';
+
+    try { renderAll(); } catch(e) { console.error('renderAll erro:', e); }
     showToast('Dados carregados!', 'success');
   } catch(e) {
     console.error('Erro ao carregar dados:', e);
