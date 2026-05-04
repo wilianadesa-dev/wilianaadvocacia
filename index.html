@@ -11613,7 +11613,7 @@ function renderAtendimentos() {
           <div class="atend-info" style="cursor:pointer;flex:1" onclick="verAtendimento(${a.id})">
             <div class="atend-cliente">${esc(a.clienteNome)} <span class="escrit-pill escrit-${idx}">${esc(a.escritorio)}</span> ${a.tipoCaso ? '<span class="tipo-caso-badge">${esc(a.tipoCaso)}</span>' : ''}</div>
             <div class="atend-meta">Processo: ${esc(a.processo || '—')}${a.parceiro ? ' &nbsp;·&nbsp; 🤝 <span style=\'color:var(--gold-dark)\'>' + esc(a.parceiro) + '</span>' : ''}</div>
-            ${a.obs ? '<div class="atend-obs">${escObs(a.obs)}</div>' : ''}
+            ${a.obs ? '<div class="atend-obs">' + escObs(a.obs) + '</div>' : ''}
           </div>
           <div class="atend-actions">
             <button class="btn btn-outline btn-sm" id="doc-btn-${a.id}" onclick="toggleDocSection(${a.id})">📋 Documentos</button>
